@@ -53,7 +53,7 @@ export default function Home() {
             <div className="text-3xl mb-3">🌱</div>
             <h3 className="font-bold text-lg mb-2">Alleen ongemanipuleerd</h3>
             <p className="text-gray-400 text-sm">
-              Elk zaadje op LastSeeds is heirloom — geen hybrides, geen GMO's. Puur zoals de natuur het bedoelde.
+              Elk zaadje op LastSeeds is heirloom — geen hybrides, geen GMO&apos;s. Puur zoals de natuur het bedoelde.
             </p>
           </Link>
 
