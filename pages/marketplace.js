@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Header from '@/components/Header';
 
 export default function Marketplace() {
   const router = useRouter();
@@ -39,13 +40,7 @@ export default function Marketplace() {
 
   return (
     <div className="min-h-screen bg-[#060a14] text-white">
-      <nav className="flex justify-between items-center px-6 py-4 border-b border-[#2a3a55]">
-        <Link href="/" className="text-xl font-bold text-[#4a9eff]">LastSeeds</Link>
-        <div className="space-x-4">
-          <Link href="/login" className="text-gray-300 hover:text-white">Inloggen</Link>
-          <Link href="/dashboard" className="text-gray-300 hover:text-white">Mijn dashboard</Link>
-        </div>
-      </nav>
+      <Header />
 
       <div className="px-6 py-10 max-w-6xl mx-auto">
         <div className="flex items-center gap-3 mb-2">

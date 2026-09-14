@@ -1,21 +1,11 @@
 import Link from 'next/link';
+import Header from '@/components/Header';
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#060a14] text-white">
       {/* Navigatiebalk */}
-      <nav className="flex justify-between items-center px-6 py-4 border-b border-[#2a3a55]">
-        <span className="text-xl font-bold text-[#4a9eff]">LastSeeds</span>
-        <div className="space-x-4">
-          <Link href="/login" className="text-gray-300 hover:text-white">Inloggen</Link>
-          <Link
-            href="/register"
-            className="bg-[#4a9eff] hover:bg-[#3a8eef] text-white px-4 py-2 rounded-lg transition"
-          >
-            Registreren
-          </Link>
-        </div>
-      </nav>
+      <Header />
 
       {/* Hero-sectie */}
       <section className="text-center px-6 py-24 max-w-3xl mx-auto">

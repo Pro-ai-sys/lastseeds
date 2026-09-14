@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Header from '@/components/Header';
 
 export default function Register() {
   const router = useRouter();
@@ -39,10 +40,9 @@ export default function Register() {
   };
 
   return (
-    
-      
-
-      <div className="min-h-screen bg-[#060a14] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#060a14]">
+      <Header showNav={false} />
+      <div className="flex items-center justify-center px-4 py-16">
         <div className="w-full max-w-md bg-[#101828] border border-[#2a3a55] rounded-2xl p-8">
           <h1 className="text-2xl font-bold text-white mb-6 text-center">Account aanmaken</h1>
 
@@ -107,6 +107,6 @@ export default function Register() {
           </p>
         </div>
       </div>
-    
+    </div>
   );
 }

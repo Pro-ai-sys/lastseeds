@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Header from '@/components/Header';
 
 export default function AuctionDetail() {
   const router = useRouter();
@@ -62,12 +63,12 @@ export default function AuctionDetail() {
 
   return (
     <div className="min-h-screen bg-[#060a14] text-white">
-      <nav className="flex justify-between items-center px-6 py-4 border-b border-[#2a3a55]">
-        <Link href="/" className="text-xl font-bold text-[#4a9eff]">LastSeeds</Link>
-        <Link href="/marketplace?type=auction" className="text-gray-300 hover:text-white">← Terug naar veilingen</Link>
-      </nav>
+      <Header />
+      <div className="px-6 py-6">
+        <Link href="/marketplace?type=auction" className="text-gray-300 hover:text-white text-sm">← Terug naar veilingen</Link>
+      </div>
 
-      <div className="max-w-2xl mx-auto px-6 py-10">
+      <div className="max-w-2xl mx-auto px-6 py-4">
         <div className="bg-[#101828] border border-[#2a3a55] rounded-2xl p-6">
           <div className="flex justify-between items-start mb-2">
             <h1 className="text-2xl font-bold">{auction.listing.title}</h1>
