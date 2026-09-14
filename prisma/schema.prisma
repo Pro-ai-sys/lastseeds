@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  username     String    @unique
+  password     String
+  role         String    @default("user")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  listings     SeedListing[]
+  auctionBids  AuctionBid[]
+  tradesSent   TradeRequest[] @relation("TradeSender")
+  tradesReceived TradeRequest[] @relation("TradeReceiver")
+  resetTokens  PasswordResetToken[]
+}
+
+model SeedCategory {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  species     SeedSpecies[]
+}
+
+model SeedSpecies {
+  id          String    @id @default(cuid())
+  name        String
+  latinName   String?
+  categoryId  String
+  category    SeedCategory @relation(fields: [categoryId], references: [id])
+  listings    SeedListing[]
+
+  @@unique([name, categoryId])
+}
+
+model SeedListing {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  quantity      Int       @default(1)
+  isHeirloom    Boolean   @default(true)
+  listingType   String    @default("sale")
+  price         Float?
+  originCountry String?
+  plantingMonth String?
+  status        String    @default("active")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  ownerId       String
+  owner         User      @relation(fields: [ownerId], references: [id])
+
+  speciesId     String
+  species       SeedSpecies @relation(fields: [speciesId], references: [id])
+
+  auction       Auction?
+  tradeRequests TradeRequest[]
+}
+
+model Auction {
+  id          String    @id @default(cuid())
+  listingId   String    @unique
+  listing     SeedListing @relation(fields: [listingId], references: [id])
+  startPrice  Float
+  endsAt      DateTime
+  status      String    @default("open")
+  bids        AuctionBid[]
+}
+
+model AuctionBid {
+  id          String    @id @default(cuid())
+  auctionId   String
+  auction     Auction   @relation(fields: [auctionId], references: [id])
+  bidderId    String
+  bidder      User      @relation(fields: [bidderId], references: [id])
+  amount      Float
+  createdAt   DateTime  @default(now())
+}
+
+model TradeRequest {
+  id            String    @id @default(cuid())
+  listingId     String
+  listing       SeedListing @relation(fields: [listingId], references: [id])
+
+  senderId      String
+  sender        User      @relation("TradeSender", fields: [senderId], references: [id])
+
+  receiverId    String
+  receiver      User      @relation("TradeReceiver", fields: [receiverId], references: [id])
+
+  offerDescription String
+  status        String    @default("pending")
+  createdAt     DateTime  @default(now())
+}
+
+model PasswordResetToken {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  token       String    @unique
+  expiresAt   DateTime
+  used        Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+}
