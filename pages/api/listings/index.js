@@ -35,6 +35,8 @@ export default async function handler(req, res) {
       startPrice,
       auctionDays,
       photoUrls,
+      seedHistory,
+      parentPlantYear,
     } = req.body;
 
     if (!title || !speciesId) {
@@ -67,6 +69,8 @@ export default async function handler(req, res) {
           price: price ? parseFloat(price) : null,
           originCountry,
           plantingMonth,
+          seedHistory,
+          parentPlantYear: parentPlantYear ? parseInt(parentPlantYear) : null,
           ownerId: user.userId,
           speciesId,
         },

@@ -62,6 +62,15 @@ export default function Header({ showNav = true }) {
                   Favorieten
                 </Link>
                 <Link
+                  href="/dashboard/wanted"
+                  className="text-gray-300 hover:text-white"
+                >
+                  Ik zoek
+                </Link>
+                <Link href="/wanted" className="text-gray-300 hover:text-white">
+                  Zoeklijst
+                </Link>
+                <Link
                   href="/dashboard/messages"
                   className="text-gray-300 hover:text-white"
                 >

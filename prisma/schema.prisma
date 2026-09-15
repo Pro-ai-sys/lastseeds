@@ -44,6 +44,7 @@ model User {
   mollieOrganizationId String?
   mollieOnboarded     Boolean @default(false)
   favorites    Favorite[]
+  wantedListings WantedListing[]
 }
 
 model SeedCategory {
@@ -60,6 +61,7 @@ model SeedSpecies {
   categoryId  String
   category    SeedCategory @relation(fields: [categoryId], references: [id])
   listings    SeedListing[]
+  wantedBy    WantedListing[]
 
   @@unique([name, categoryId])
 }
@@ -76,6 +78,8 @@ model SeedListing {
   originCountry String?
   plantingMonth String?
   trackingCode  String?   // optioneel, alleen als verkoper Track&Trace gebruikt
+  seedHistory   String?   // teeltgeschiedenis, bijv. "3 generaties open-pollinated"
+  parentPlantYear Int?    // jaar van de moederplant/eerste selectie
   status        String    @default("active")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -147,6 +151,7 @@ model Review {
   reviewer    User      @relation("ReviewerReviews", fields: [reviewerId], references: [id])
   rating      Int       // 1-5
   comment     String?
+  photoUrl    String?
   createdAt   DateTime  @default(now())
 
   @@unique([sellerId, reviewerId])
@@ -227,4 +232,15 @@ model Favorite {
   createdAt   DateTime  @default(now())
 
   @@unique([userId, listingId])
+}
+
+model WantedListing {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  speciesId   String
+  species     SeedSpecies @relation(fields: [speciesId], references: [id])
+  description String?
+  status      String    @default("active") // active, fulfilled
+  createdAt   DateTime  @default(now())
 }

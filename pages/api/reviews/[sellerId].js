@@ -62,7 +62,7 @@ export default async function handler(req, res) {
       });
     }
 
-    const { rating, comment } = req.body;
+    const { rating, comment, photoUrl } = req.body;
     if (!rating || rating < 1 || rating > 5) {
       return res.status(400).json({ error: "Rating moet tussen 1 en 5 zijn" });
     }
@@ -70,12 +70,13 @@ export default async function handler(req, res) {
     try {
       const review = await prisma.review.upsert({
         where: { sellerId_reviewerId: { sellerId, reviewerId: user.userId } },
-        update: { rating: parseInt(rating), comment },
+        update: { rating: parseInt(rating), comment, photoUrl },
         create: {
           sellerId,
           reviewerId: user.userId,
           rating: parseInt(rating),
           comment,
+          photoUrl,
         },
       });
       return res.status(201).json({ review });

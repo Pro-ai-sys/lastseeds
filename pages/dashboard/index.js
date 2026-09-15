@@ -22,6 +22,8 @@ export default function Dashboard() {
     speciesId: "",
     originCountry: "",
     plantingMonth: "",
+    seedHistory: "",
+    parentPlantYear: "",
     startPrice: "",
     auctionDays: 7,
     photos: [],
@@ -106,6 +108,8 @@ export default function Dashboard() {
       speciesId: "",
       originCountry: "",
       plantingMonth: "",
+      seedHistory: "",
+      parentPlantYear: "",
       startPrice: "",
       auctionDays: 7,
       photos: [],
@@ -299,6 +303,35 @@ export default function Dashboard() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-1">
+                    Teeltgeschiedenis (optioneel)
+                  </label>
+                  <input
+                    type="text"
+                    name="seedHistory"
+                    value={form.seedHistory}
+                    onChange={handleChange}
+                    placeholder="Bijv. '3 generaties open-pollinated'"
+                    className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-300 mb-1">
+                    Jaar moederplant (optioneel)
+                  </label>
+                  <input
+                    type="number"
+                    name="parentPlantYear"
+                    value={form.parentPlantYear}
+                    onChange={handleChange}
+                    placeholder="Bijv. 2020"
+                    className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-gray-300 mb-1">
                     Type
                   </label>
                   <select
@@ -448,12 +481,18 @@ export default function Dashboard() {
                     {listing.plantingMonth && (
                       <p>Planten: {listing.plantingMonth}</p>
                     )}
+                    {listing.seedHistory && (
+                      <p>Geschiedenis: {listing.seedHistory}</p>
+                    )}
+                    {listing.parentPlantYear && (
+                      <p>Moederplant sinds: {listing.parentPlantYear}</p>
+                    )}
                     <p className="capitalize">
                       {listing.listingType === "sale"
                         ? "Verkoop"
                         : listing.listingType === "auction"
-                          ? "Veiling"
-                          : "Ruil"}
+                        ? "Veiling"
+                        : "Ruil"}
                     </p>
                   </div>
                   {listing.price && (

@@ -192,6 +192,12 @@ export default function Marketplace({
                         {listing.plantingMonth && (
                           <p>Planten: {listing.plantingMonth}</p>
                         )}
+                        {listing.seedHistory && (
+                          <p>Geschiedenis: {listing.seedHistory}</p>
+                        )}
+                        {listing.parentPlantYear && (
+                          <p>Moederplant sinds: {listing.parentPlantYear}</p>
+                        )}
                         <p>
                           Aangeboden door:{" "}
                           <Link

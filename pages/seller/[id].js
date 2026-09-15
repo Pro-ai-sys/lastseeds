@@ -9,6 +9,8 @@ export default function SellerProfile() {
   const [data, setData] = useState(null);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(true);
@@ -24,6 +26,23 @@ export default function SellerProfile() {
     setLoading(false);
   }
 
+  async function handlePhotoChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      headers: { "Content-Type": file.type },
+      body: file,
+    });
+    const uploadData = await res.json();
+    if (uploadData.url) {
+      setPhotoUrl(uploadData.url);
+    }
+    setUploading(false);
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
@@ -32,7 +51,7 @@ export default function SellerProfile() {
     const res = await fetch(`/api/reviews/${id}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ rating, comment }),
+      body: JSON.stringify({ rating, comment, photoUrl }),
     });
 
     const json = await res.json();
@@ -48,6 +67,7 @@ export default function SellerProfile() {
 
     setSuccess("Bedankt voor je review!");
     setComment("");
+    setPhotoUrl("");
     loadReviews();
   }
 
@@ -147,6 +167,30 @@ export default function SellerProfile() {
               placeholder="Je ervaring met deze verkoper (optioneel)"
               className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white"
             />
+
+            <div>
+              <label className="block text-sm text-gray-300 mb-1">
+                Foto van ontvangen zaden (optioneel)
+              </label>
+              {photoUrl && (
+                <img
+                  src={photoUrl}
+                  alt=""
+                  className="w-24 h-24 object-cover rounded-lg mb-2"
+                />
+              )}
+              <label className="inline-block bg-[#0a0e1a] border border-dashed border-[#2a3a55] rounded-lg px-4 py-2 text-sm text-gray-400 cursor-pointer hover:border-[#4a9eff]">
+                {uploading ? "Bezig met uploaden..." : "Foto toevoegen"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  disabled={uploading}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
             <button
               type="submit"
               className="bg-[#4a9eff] hover:bg-[#3a8eef] px-6 py-2 rounded-lg font-semibold transition"
@@ -176,7 +220,14 @@ export default function SellerProfile() {
                     </span>
                   </div>
                   {r.comment && (
-                    <p className="text-gray-300 text-sm">{r.comment}</p>
+                    <p className="text-gray-300 text-sm mb-2">{r.comment}</p>
+                  )}
+                  {r.photoUrl && (
+                    <img
+                      src={r.photoUrl}
+                      alt=""
+                      className="w-32 h-32 object-cover rounded-lg"
+                    />
                   )}
                 </div>
               ))}
