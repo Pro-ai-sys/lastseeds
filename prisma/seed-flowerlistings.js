@@ -1,10 +1,29 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const landen = ['Nederland', 'België', 'Duitsland', 'Frankrijk', 'Italië', 'Spanje', 'Polen', 'Zweden'];
-const maanden = ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Augustus', 'September'];
-const listingTypes = ['sale', 'auction', 'trade'];
-const quantityUnits = ['zaadjes', 'gram'];
+const landen = [
+  "Nederland",
+  "België",
+  "Duitsland",
+  "Frankrijk",
+  "Italië",
+  "Spanje",
+  "Polen",
+  "Zweden",
+];
+const maanden = [
+  "Januari",
+  "Februari",
+  "Maart",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Augustus",
+  "September",
+];
+const listingTypes = ["sale", "auction", "trade"];
+const quantityUnits = ["zaadjes", "gram"];
 
 function randomFrom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -16,18 +35,20 @@ function randomInt(min, max) {
 
 async function main() {
   const bloemenCategorie = await prisma.seedCategory.findUnique({
-    where: { name: 'Bloemen' },
+    where: { name: "Bloemen" },
     include: { species: true },
   });
 
   if (!bloemenCategorie || bloemenCategorie.species.length === 0) {
-    console.log('Geen Bloemen-categorie of soorten gevonden. Run eerst seed-flowers.js!');
+    console.log(
+      "Geen Bloemen-categorie of soorten gevonden. Run eerst seed-flowers.js!",
+    );
     return;
   }
 
-  const users = await prisma.user.findMany({ where: { role: 'user' } });
+  const users = await prisma.user.findMany({ where: { role: "user" } });
   if (users.length === 0) {
-    console.log('Geen testgebruikers gevonden.');
+    console.log("Geen testgebruikers gevonden.");
     return;
   }
 
@@ -49,7 +70,10 @@ async function main() {
         quantityUnit,
         isHeirloom,
         listingType,
-        price: listingType === 'sale' ? parseFloat((Math.random() * 4 + 0.5).toFixed(2)) : null,
+        price:
+          listingType === "sale"
+            ? parseFloat((Math.random() * 4 + 0.5).toFixed(2))
+            : null,
         originCountry: randomFrom(landen),
         plantingMonth: randomFrom(maanden),
         ownerId: owner.id,
@@ -57,7 +81,7 @@ async function main() {
       },
     });
 
-    if (listingType === 'auction') {
+    if (listingType === "auction") {
       const endsAt = new Date();
       endsAt.setDate(endsAt.getDate() + randomInt(3, 14));
 

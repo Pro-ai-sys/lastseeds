@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import Header from '@/components/Header';
-import PhotoLightbox from '@/components/PhotoLightbox';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import Header from "@/components/Header";
+import PhotoLightbox from "@/components/PhotoLightbox";
 
 export default function AuctionDetail() {
   const router = useRouter();
   const { id } = router.query;
   const [auction, setAuction] = useState(null);
-  const [amount, setAmount] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [amount, setAmount] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,12 +26,12 @@ export default function AuctionDetail() {
 
   async function handleBid(e) {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     const res = await fetch(`/api/auctions/${id}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount }),
     });
 
@@ -39,24 +39,32 @@ export default function AuctionDetail() {
 
     if (!res.ok) {
       if (res.status === 401) {
-        router.push('/login');
+        router.push("/login");
         return;
       }
-      setError(data.error || 'Er ging iets mis');
+      setError(data.error || "Er ging iets mis");
       return;
     }
 
-    setSuccess('Je bod is geplaatst!');
-    setAmount('');
+    setSuccess("Je bod is geplaatst!");
+    setAmount("");
     loadAuction();
   }
 
   if (loading) {
-    return <div className="min-h-screen bg-[#060a14] text-white flex items-center justify-center">Laden...</div>;
+    return (
+      <div className="min-h-screen bg-[#060a14] text-white flex items-center justify-center">
+        Laden...
+      </div>
+    );
   }
 
   if (!auction) {
-    return <div className="min-h-screen bg-[#060a14] text-white flex items-center justify-center">Veiling niet gevonden.</div>;
+    return (
+      <div className="min-h-screen bg-[#060a14] text-white flex items-center justify-center">
+        Veiling niet gevonden.
+      </div>
+    );
   }
 
   const highestBid = auction.bids[0]?.amount || auction.startPrice;
@@ -66,7 +74,12 @@ export default function AuctionDetail() {
     <div className="min-h-screen bg-[#060a14] text-white">
       <Header />
       <div className="px-6 py-6">
-        <Link href="/marketplace?type=auction" className="text-gray-300 hover:text-white text-sm">← Terug naar veilingen</Link>
+        <Link
+          href="/marketplace?type=auction"
+          className="text-gray-300 hover:text-white text-sm"
+        >
+          ← Terug naar veilingen
+        </Link>
       </div>
 
       <div className="max-w-2xl mx-auto px-6 py-4">
@@ -76,27 +89,42 @@ export default function AuctionDetail() {
           <div className="flex justify-between items-start mb-2">
             <h1 className="text-2xl font-bold">{auction.listing.title}</h1>
             {auction.listing.isHeirloom && (
-              <span className="text-xs bg-green-900/40 text-green-300 px-2 py-1 rounded-full">🌱 Heirloom</span>
+              <span className="text-xs bg-green-900/40 text-green-300 px-2 py-1 rounded-full">
+                🌱 Heirloom
+              </span>
             )}
           </div>
-          <p className="text-gray-400 mb-1">{auction.listing.species?.category?.name} · {auction.listing.species?.name}</p>
-          <p className="text-gray-400 text-sm mb-4">{auction.listing.description}</p>
+          <p className="text-gray-400 mb-1">
+            {auction.listing.species?.category?.name} ·{" "}
+            {auction.listing.species?.name}
+          </p>
+          <p className="text-gray-400 text-sm mb-4">
+            {auction.listing.description}
+          </p>
 
           <div className="text-sm text-gray-400 space-y-1 mb-6">
-            {auction.listing.originCountry && <p>Herkomst: {auction.listing.originCountry}</p>}
-            {auction.listing.plantingMonth && <p>Planten: {auction.listing.plantingMonth}</p>}
+            {auction.listing.originCountry && (
+              <p>Herkomst: {auction.listing.originCountry}</p>
+            )}
+            {auction.listing.plantingMonth && (
+              <p>Planten: {auction.listing.plantingMonth}</p>
+            )}
             <p>Aangeboden door: {auction.listing.owner?.username}</p>
-            <p>Sluit op: {new Date(auction.endsAt).toLocaleString('nl-NL')}</p>
+            <p>Sluit op: {new Date(auction.endsAt).toLocaleString("nl-NL")}</p>
           </div>
 
           <div className="bg-[#0a0e1a] border border-[#2a3a55] rounded-xl p-4 mb-6">
             <p className="text-gray-400 text-sm">Huidig hoogste bod</p>
             <p className="text-3xl font-bold text-[#4a9eff]">€{highestBid}</p>
-            <p className="text-xs text-gray-500">Startprijs was €{auction.startPrice}</p>
+            <p className="text-xs text-gray-500">
+              Startprijs was €{auction.startPrice}
+            </p>
           </div>
 
           {isExpired ? (
-            <p className="text-red-400 text-sm mb-6">Deze veiling is gesloten.</p>
+            <p className="text-red-400 text-sm mb-6">
+              Deze veiling is gesloten.
+            </p>
           ) : (
             <form onSubmit={handleBid} className="mb-6">
               {error && (
@@ -111,8 +139,11 @@ export default function AuctionDetail() {
               )}
               <div className="flex gap-2">
                 <input
-                  type="number" step="0.01" min={highestBid + 0.01}
-                  value={amount} onChange={(e) => setAmount(e.target.value)}
+                  type="number"
+                  step="0.01"
+                  min={highestBid + 0.01}
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
                   placeholder={`Meer dan €${highestBid}`}
                   className="flex-1 bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                 />
@@ -133,9 +164,16 @@ export default function AuctionDetail() {
             ) : (
               <div className="space-y-2">
                 {auction.bids.map((bid) => (
-                  <div key={bid.id} className="flex justify-between text-sm bg-[#0a0e1a] rounded-lg px-3 py-2">
-                    <span className="text-gray-300">{bid.bidder?.username}</span>
-                    <span className="text-[#4a9eff] font-semibold">€{bid.amount}</span>
+                  <div
+                    key={bid.id}
+                    className="flex justify-between text-sm bg-[#0a0e1a] rounded-lg px-3 py-2"
+                  >
+                    <span className="text-gray-300">
+                      {bid.bidder?.username}
+                    </span>
+                    <span className="text-[#4a9eff] font-semibold">
+                      €{bid.amount}
+                    </span>
                   </div>
                 ))}
               </div>

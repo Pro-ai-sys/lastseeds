@@ -1,12 +1,12 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from "react";
 
 const languages = [
-  { code: 'nl', label: 'Nederlands' },
-  { code: 'en', label: 'English' },
-  { code: 'de', label: 'Deutsch' },
-  { code: 'fr', label: 'Français' },
-  { code: 'es', label: 'Español' },
-  { code: 'it', label: 'Italiano' },
+  { code: "nl", label: "Nederlands" },
+  { code: "en", label: "English" },
+  { code: "de", label: "Deutsch" },
+  { code: "fr", label: "Français" },
+  { code: "es", label: "Español" },
+  { code: "it", label: "Italiano" },
 ];
 
 export default function GoogleTranslate() {
@@ -14,23 +14,24 @@ export default function GoogleTranslate() {
   const ref = useRef(null);
 
   useEffect(() => {
-    if (document.getElementById('google-translate-script')) return;
+    if (document.getElementById("google-translate-script")) return;
 
     window.googleTranslateElementInit = () => {
       new window.google.translate.TranslateElement(
         {
-          pageLanguage: 'nl',
-          includedLanguages: 'en,de,fr,es,it',
+          pageLanguage: "nl",
+          includedLanguages: "en,de,fr,es,it",
           layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
           autoDisplay: false,
         },
-        'google_translate_element'
+        "google_translate_element",
       );
     };
 
-    const script = document.createElement('script');
-    script.id = 'google-translate-script';
-    script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    const script = document.createElement("script");
+    script.id = "google-translate-script";
+    script.src =
+      "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
     script.async = true;
     document.body.appendChild(script);
   }, []);
@@ -41,22 +42,22 @@ export default function GoogleTranslate() {
         setOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   function selectLanguage(code) {
     setOpen(false);
     const tryTrigger = (attempts = 0) => {
-      const select = document.querySelector('.goog-te-combo');
+      const select = document.querySelector(".goog-te-combo");
       if (select) {
         select.value = code;
-        const event = new Event('change', { bubbles: true });
+        const event = new Event("change", { bubbles: true });
         select.dispatchEvent(event);
       } else if (attempts < 20) {
         setTimeout(() => tryTrigger(attempts + 1), 300);
       } else {
-        console.error('Google Translate select-element niet gevonden');
+        console.error("Google Translate select-element niet gevonden");
       }
     };
     tryTrigger();
@@ -65,7 +66,10 @@ export default function GoogleTranslate() {
   return (
     <div className="relative" ref={ref}>
       {/* Verborgen, echte Google Translate widget */}
-      <div id="google_translate_element" style={{ position: 'absolute', top: -9999, left: -9999 }} />
+      <div
+        id="google_translate_element"
+        style={{ position: "absolute", top: -9999, left: -9999 }}
+      />
 
       <button
         onClick={() => setOpen(!open)}

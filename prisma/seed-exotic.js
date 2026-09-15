@@ -1,29 +1,34 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
   const categorie = await prisma.seedCategory.upsert({
-    where: { name: 'Exotische groenten' },
-    update: { description: 'Groenten uit Azië, Zuid-Amerika en het Caribisch gebied' },
-    create: { name: 'Exotische groenten', description: 'Groenten uit Azië, Zuid-Amerika en het Caribisch gebied' },
+    where: { name: "Exotische groenten" },
+    update: {
+      description: "Groenten uit Azië, Zuid-Amerika en het Caribisch gebied",
+    },
+    create: {
+      name: "Exotische groenten",
+      description: "Groenten uit Azië, Zuid-Amerika en het Caribisch gebied",
+    },
   });
 
   const soorten = [
-    'Okra',
-    'Bittermeloen',
-    'Chayote',
-    'Taro',
-    'Yuca (Cassave)',
-    'Malanga',
-    'Boniato',
-    'Thaise basilicum',
-    'Vietnamese koriander',
-    'Bladmosterd (Aziatisch)',
-    'Callaloo',
-    'Scotch Bonnet peper',
-    'Habanero peper',
-    'Rocoto peper',
-    'Ají Amarillo peper',
+    "Okra",
+    "Bittermeloen",
+    "Chayote",
+    "Taro",
+    "Yuca (Cassave)",
+    "Malanga",
+    "Boniato",
+    "Thaise basilicum",
+    "Vietnamese koriander",
+    "Bladmosterd (Aziatisch)",
+    "Callaloo",
+    "Scotch Bonnet peper",
+    "Habanero peper",
+    "Rocoto peper",
+    "Ají Amarillo peper",
   ];
 
   for (const naam of soorten) {

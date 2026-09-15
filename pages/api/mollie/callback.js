@@ -1,23 +1,23 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from "@/lib/prisma";
 
 export default async function handler(req, res) {
   const { code, state } = req.query;
 
   if (!code || !state) {
-    return res.redirect('/dashboard?mollie=error');
+    return res.redirect("/dashboard?mollie=error");
   }
 
   try {
-    const tokenRes = await fetch('https://api.mollie.com/oauth2/tokens', {
-      method: 'POST',
+    const tokenRes = await fetch("https://api.mollie.com/oauth2/tokens", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        "Content-Type": "application/x-www-form-urlencoded",
         Authorization: `Basic ${Buffer.from(
-          `${process.env.MOLLIE_CLIENT_ID}:${process.env.MOLLIE_CLIENT_SECRET}`
-        ).toString('base64')}`,
+          `${process.env.MOLLIE_CLIENT_ID}:${process.env.MOLLIE_CLIENT_SECRET}`,
+        ).toString("base64")}`,
       },
       body: new URLSearchParams({
-        grant_type: 'authorization_code',
+        grant_type: "authorization_code",
         code,
         redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/api/mollie/callback`,
       }),
@@ -26,11 +26,11 @@ export default async function handler(req, res) {
     const tokens = await tokenRes.json();
 
     if (!tokens.access_token) {
-      console.error('Mollie token error:', tokens);
-      return res.redirect('/dashboard?mollie=error');
+      console.error("Mollie token error:", tokens);
+      return res.redirect("/dashboard?mollie=error");
     }
 
-    const orgRes = await fetch('https://api.mollie.com/v2/organizations/me', {
+    const orgRes = await fetch("https://api.mollie.com/v2/organizations/me", {
       headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
     const org = await orgRes.json();
@@ -45,9 +45,9 @@ export default async function handler(req, res) {
       },
     });
 
-    return res.redirect('/dashboard?mollie=success');
+    return res.redirect("/dashboard?mollie=success");
   } catch (error) {
     console.error(error);
-    return res.redirect('/dashboard?mollie=error');
+    return res.redirect("/dashboard?mollie=error");
   }
 }

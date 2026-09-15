@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function ImageUploader({ photos, setPhotos }) {
   const [uploading, setUploading] = useState(false);
@@ -10,9 +10,9 @@ export default function ImageUploader({ photos, setPhotos }) {
     setUploading(true);
 
     for (const file of files) {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': file.type },
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": file.type },
         body: file,
       });
       const data = await res.json();
@@ -31,13 +31,17 @@ export default function ImageUploader({ photos, setPhotos }) {
   return (
     <div>
       <label className="block text-sm text-gray-300 mb-1">
-         Foto&apos;s ({photos.length}/4)
+        Foto&apos;s ({photos.length}/4)
       </label>
 
       <div className="grid grid-cols-4 gap-2 mb-2">
         {photos.map((url, index) => (
           <div key={index} className="relative aspect-square">
-            <img src={url} alt="" className="w-full h-full object-cover rounded-lg" />
+            <img
+              src={url}
+              alt=""
+              className="w-full h-full object-cover rounded-lg"
+            />
             <button
               type="button"
               onClick={() => removePhoto(index)}
@@ -51,7 +55,7 @@ export default function ImageUploader({ photos, setPhotos }) {
 
       {photos.length < 4 && (
         <label className="block bg-[#0a0e1a] border border-dashed border-[#2a3a55] rounded-lg p-4 text-center text-sm text-gray-400 cursor-pointer hover:border-[#4a9eff]">
-          {uploading ? 'Bezig met uploaden...' : "+ Foto toevoegen"}
+          {uploading ? "Bezig met uploaden..." : "+ Foto toevoegen"}
           <input
             type="file"
             accept="image/*"

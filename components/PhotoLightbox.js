@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function PhotoLightbox({ photos }) {
   const [selected, setSelected] = useState(null);
@@ -24,7 +24,11 @@ export default function PhotoLightbox({ photos }) {
           onClick={() => setSelected(null)}
           className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 cursor-pointer p-4"
         >
-          <img src={selected} alt="" className="max-w-full max-h-full rounded-lg" />
+          <img
+            src={selected}
+            alt=""
+            className="max-w-full max-h-full rounded-lg"
+          />
         </div>
       )}
     </>

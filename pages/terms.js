@@ -1,18 +1,27 @@
-import Header from '@/components/Header';
-import Link from 'next/link';
+import Header from "@/components/Header";
+import Link from "next/link";
 
 export default function Terms() {
   return (
     <div className="min-h-screen bg-[#060a14] text-white">
       <Header showNav={false} />
       <div className="max-w-3xl mx-auto px-6 py-16">
-        <Link href="/" className="text-sm text-gray-400 hover:text-white mb-6 inline-block">← Terug naar home</Link>
+        <Link
+          href="/"
+          className="text-sm text-gray-400 hover:text-white mb-6 inline-block"
+        >
+          ← Terug naar home
+        </Link>
         <h1 className="text-3xl font-bold mb-2">Algemene voorwaarden</h1>
-        <p className="text-gray-500 text-sm mb-8">Laatst bijgewerkt: [datum invullen]</p>
+        <p className="text-gray-500 text-sm mb-8">
+          Laatst bijgewerkt: [datum invullen]
+        </p>
 
         <div className="space-y-6 text-gray-300 text-sm leading-relaxed">
           <section>
-            <h2 className="text-lg font-bold text-white mb-2">1. Wat is LastSeeds</h2>
+            <h2 className="text-lg font-bold text-white mb-2">
+              1. Wat is LastSeeds
+            </h2>
             <p>
               LastSeeds is een online marktplaats waar gebruikers zaden kunnen
               kopen, verkopen, veilen en ruilen met elkaar. LastSeeds treedt op
@@ -22,31 +31,55 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-white mb-2">2. Gebruikersaccount</h2>
+            <h2 className="text-lg font-bold text-white mb-2">
+              2. Gebruikersaccount
+            </h2>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Je moet minimaal 18 jaar oud zijn om een account aan te maken.</li>
-              <li>Je bent verantwoordelijk voor het geheimhouden van je inloggegevens.</li>
+              <li>
+                Je moet minimaal 18 jaar oud zijn om een account aan te maken.
+              </li>
+              <li>
+                Je bent verantwoordelijk voor het geheimhouden van je
+                inloggegevens.
+              </li>
               <li>Eén persoon mag slechts één account aanmaken.</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-white mb-2">3. Listings en verplichtingen verkoper</h2>
+            <h2 className="text-lg font-bold text-white mb-2">
+              3. Listings en verplichtingen verkoper
+            </h2>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Je mag alleen zaden aanbieden waarvan je zelf eigenaar bent of gerechtigd bent te verhandelen.</li>
-              <li>Informatie over het aangeboden product (soort, hoeveelheid, herkomst) moet naar waarheid worden vermeld.</li>
-              <li>Het is verboden zaden aan te bieden waarvan de handel wettelijk verboden is in Nederland.</li>
               <li>
-                Cannabiszaden mogen worden aangeboden als genetisch materiaal, in
-                lijn met de Nederlandse wetgeving. Kopers zijn zelf
-                verantwoordelijk voor naleving van de wetgeving in hun eigen land.
+                Je mag alleen zaden aanbieden waarvan je zelf eigenaar bent of
+                gerechtigd bent te verhandelen.
               </li>
-              <li>Verboden middelen (waaronder psilocybine-bevattende paddenstoelen/sporen) mogen niet worden aangeboden.</li>
+              <li>
+                Informatie over het aangeboden product (soort, hoeveelheid,
+                herkomst) moet naar waarheid worden vermeld.
+              </li>
+              <li>
+                Het is verboden zaden aan te bieden waarvan de handel wettelijk
+                verboden is in Nederland.
+              </li>
+              <li>
+                Cannabiszaden mogen worden aangeboden als genetisch materiaal,
+                in lijn met de Nederlandse wetgeving. Kopers zijn zelf
+                verantwoordelijk voor naleving van de wetgeving in hun eigen
+                land.
+              </li>
+              <li>
+                Verboden middelen (waaronder psilocybine-bevattende
+                paddenstoelen/sporen) mogen niet worden aangeboden.
+              </li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-white mb-2">4. Veilingen en biedingen</h2>
+            <h2 className="text-lg font-bold text-white mb-2">
+              4. Veilingen en biedingen
+            </h2>
             <p>
               Een geplaatst bod is bindend. Bij het winnen van een veiling ga je
               de verplichting aan het bedrag te voldoen aan de verkoper via de
@@ -75,12 +108,21 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-white mb-2">7. Verboden gebruik</h2>
+            <h2 className="text-lg font-bold text-white mb-2">
+              7. Verboden gebruik
+            </h2>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Het plaatsen van misleidende, frauduleuze of illegale listings</li>
-              <li>Het lastigvallen, bedreigen of intimideren van andere gebruikers</li>
+              <li>
+                Het plaatsen van misleidende, frauduleuze of illegale listings
+              </li>
+              <li>
+                Het lastigvallen, bedreigen of intimideren van andere gebruikers
+              </li>
               <li>Het omzeilen van beveiligingsmaatregelen van het platform</li>
-              <li>Het gebruiken van het platform voor doeleinden die niet in overeenstemming zijn met deze voorwaarden</li>
+              <li>
+                Het gebruiken van het platform voor doeleinden die niet in
+                overeenstemming zijn met deze voorwaarden
+              </li>
             </ul>
             <p className="mt-2">
               LastSeeds behoudt zich het recht voor accounts te schorsen of te
@@ -89,7 +131,9 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-white mb-2">8. Aansprakelijkheid</h2>
+            <h2 className="text-lg font-bold text-white mb-2">
+              8. Aansprakelijkheid
+            </h2>
             <p>
               LastSeeds is niet aansprakelijk voor schade voortvloeiend uit
               transacties tussen gebruikers, de kwaliteit of kiemkracht van
@@ -99,7 +143,9 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-white mb-2">9. Wijzigingen</h2>
+            <h2 className="text-lg font-bold text-white mb-2">
+              9. Wijzigingen
+            </h2>
             <p>
               LastSeeds kan deze voorwaarden van tijd tot tijd wijzigen.
               Gebruikers worden hiervan op de hoogte gesteld via het platform.

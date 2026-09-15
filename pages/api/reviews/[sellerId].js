@@ -1,18 +1,20 @@
-import { prisma } from '@/lib/prisma';
-import { getUserFromReq } from '@/lib/auth';
+import { prisma } from "@/lib/prisma";
+import { getUserFromReq } from "@/lib/auth";
 
 export default async function handler(req, res) {
   const { sellerId } = req.query;
 
-  if (req.method === 'GET') {
+  if (req.method === "GET") {
     const reviews = await prisma.review.findMany({
       where: { sellerId },
       include: { reviewer: { select: { username: true } } },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
 
     const avgRating = reviews.length
-      ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+      ? (
+          reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+        ).toFixed(1)
       : null;
 
     const seller = await prisma.user.findUnique({
@@ -21,9 +23,10 @@ export default async function handler(req, res) {
     });
 
     let badge = null;
-    if (reviews.length >= 20 && avgRating >= 4.5) badge = 'Topverkoper';
-    else if (reviews.length >= 5 && avgRating >= 4) badge = 'Betrouwbare verkoper';
-    else if (reviews.length >= 1) badge = 'Actieve verkoper';
+    if (reviews.length >= 20 && avgRating >= 4.5) badge = "Topverkoper";
+    else if (reviews.length >= 5 && avgRating >= 4)
+      badge = "Betrouwbare verkoper";
+    else if (reviews.length >= 1) badge = "Actieve verkoper";
 
     return res.status(200).json({
       reviews,
@@ -34,17 +37,19 @@ export default async function handler(req, res) {
     });
   }
 
-  if (req.method === 'POST') {
+  if (req.method === "POST") {
     const user = getUserFromReq(req);
-    if (!user) return res.status(401).json({ error: 'Niet ingelogd' });
+    if (!user) return res.status(401).json({ error: "Niet ingelogd" });
 
     if (user.userId === sellerId) {
-      return res.status(400).json({ error: 'Je kunt jezelf geen review geven' });
+      return res
+        .status(400)
+        .json({ error: "Je kunt jezelf geen review geven" });
     }
 
     const { rating, comment } = req.body;
     if (!rating || rating < 1 || rating > 5) {
-      return res.status(400).json({ error: 'Rating moet tussen 1 en 5 zijn' });
+      return res.status(400).json({ error: "Rating moet tussen 1 en 5 zijn" });
     }
 
     try {
@@ -61,9 +66,9 @@ export default async function handler(req, res) {
       return res.status(201).json({ review });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ error: 'Er ging iets mis' });
+      return res.status(500).json({ error: "Er ging iets mis" });
     }
   }
 
-  return res.status(405).json({ error: 'Method not allowed' });
+  return res.status(405).json({ error: "Method not allowed" });
 }

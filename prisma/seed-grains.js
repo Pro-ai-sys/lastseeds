@@ -1,14 +1,17 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
   const categorie = await prisma.seedCategory.upsert({
-    where: { name: 'Granen' },
+    where: { name: "Granen" },
     update: {},
-    create: { name: 'Granen', description: 'Granen en pseudogranen voor eigen teelt' },
+    create: {
+      name: "Granen",
+      description: "Granen en pseudogranen voor eigen teelt",
+    },
   });
 
-  const soorten = ['Quinoa', 'Boekweit', 'Amarant', 'Haver', 'Gerst', 'Spelt'];
+  const soorten = ["Quinoa", "Boekweit", "Amarant", "Haver", "Gerst", "Spelt"];
 
   for (const naam of soorten) {
     await prisma.seedSpecies.upsert({
@@ -21,4 +24,6 @@ async function main() {
   console.log('Categorie "Granen" toegevoegd!');
 }
 
-main().catch((e) => console.error(e)).finally(() => prisma.$disconnect());
+main()
+  .catch((e) => console.error(e))
+  .finally(() => prisma.$disconnect());

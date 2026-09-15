@@ -1,11 +1,56 @@
-const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcryptjs');
+const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcryptjs");
 const prisma = new PrismaClient();
 
-const voornamen = ['Jan', 'Anna', 'Piet', 'Marie', 'Kees', 'Sanne', 'Bram', 'Fleur', 'Tom', 'Eva', 'Sem', 'Nora', 'Finn', 'Lotte', 'Daan', 'Julia', 'Milan', 'Roos', 'Lars', 'Iris'];
-const landen = ['Nederland', 'België', 'Duitsland', 'Frankrijk', 'Italië', 'Spanje', 'Polen', 'Zweden', 'Portugal', 'Oostenrijk'];
-const maanden = ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Augustus', 'September', 'Oktober', 'November', 'December'];
-const listingTypes = ['sale', 'auction', 'trade'];
+const voornamen = [
+  "Jan",
+  "Anna",
+  "Piet",
+  "Marie",
+  "Kees",
+  "Sanne",
+  "Bram",
+  "Fleur",
+  "Tom",
+  "Eva",
+  "Sem",
+  "Nora",
+  "Finn",
+  "Lotte",
+  "Daan",
+  "Julia",
+  "Milan",
+  "Roos",
+  "Lars",
+  "Iris",
+];
+const landen = [
+  "Nederland",
+  "België",
+  "Duitsland",
+  "Frankrijk",
+  "Italië",
+  "Spanje",
+  "Polen",
+  "Zweden",
+  "Portugal",
+  "Oostenrijk",
+];
+const maanden = [
+  "Januari",
+  "Februari",
+  "Maart",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Augustus",
+  "September",
+  "Oktober",
+  "November",
+  "December",
+];
+const listingTypes = ["sale", "auction", "trade"];
 
 function randomFrom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -16,8 +61,8 @@ function randomInt(min, max) {
 }
 
 async function main() {
-  console.log('Bezig met gebruikers aanmaken...');
-  const hashedPassword = await bcrypt.hash('test1234', 10);
+  console.log("Bezig met gebruikers aanmaken...");
+  const hashedPassword = await bcrypt.hash("test1234", 10);
   const users = [];
 
   for (let i = 1; i <= 80; i++) {
@@ -32,21 +77,21 @@ async function main() {
         email,
         username,
         password: hashedPassword,
-        role: 'user',
+        role: "user",
       },
     });
     users.push(user);
   }
   console.log(`${users.length} gebruikers klaar.`);
 
-  console.log('Soorten ophalen...');
+  console.log("Soorten ophalen...");
   const allSpecies = await prisma.seedSpecies.findMany();
   if (allSpecies.length === 0) {
-    console.log('Geen soorten gevonden — run eerst seed-species.js!');
+    console.log("Geen soorten gevonden — run eerst seed-species.js!");
     return;
   }
 
-  console.log('Bezig met listings aanmaken...');
+  console.log("Bezig met listings aanmaken...");
   for (let i = 1; i <= 80; i++) {
     const species = randomFrom(allSpecies);
     const owner = randomFrom(users);
@@ -63,7 +108,10 @@ async function main() {
         quantity,
         isHeirloom,
         listingType,
-        price: listingType === 'sale' ? parseFloat((Math.random() * 8 + 1).toFixed(2)) : null,
+        price:
+          listingType === "sale"
+            ? parseFloat((Math.random() * 8 + 1).toFixed(2))
+            : null,
         originCountry,
         plantingMonth,
         ownerId: owner.id,
@@ -71,7 +119,7 @@ async function main() {
       },
     });
 
-    if (listingType === 'auction') {
+    if (listingType === "auction") {
       const endsAt = new Date();
       endsAt.setDate(endsAt.getDate() + randomInt(3, 14));
 
@@ -85,7 +133,7 @@ async function main() {
     }
   }
 
-  console.log('80 listings aangemaakt, verspreid over alle categorieën.');
+  console.log("80 listings aangemaakt, verspreid over alle categorieën.");
 }
 
 main()

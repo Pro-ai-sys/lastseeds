@@ -1,25 +1,31 @@
-import { prisma } from '@/lib/prisma';
-import { hashPassword } from '@/lib/auth';
+import { prisma } from "@/lib/prisma";
+import { hashPassword } from "@/lib/auth";
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   const { token, password } = req.body;
 
   if (!token || !password) {
-    return res.status(400).json({ error: 'Token en wachtwoord zijn verplicht' });
+    return res
+      .status(400)
+      .json({ error: "Token en wachtwoord zijn verplicht" });
   }
 
   if (password.length < 8) {
-    return res.status(400).json({ error: 'Wachtwoord moet minimaal 8 tekens zijn' });
+    return res
+      .status(400)
+      .json({ error: "Wachtwoord moet minimaal 8 tekens zijn" });
   }
 
-  const resetToken = await prisma.passwordResetToken.findUnique({ where: { token } });
+  const resetToken = await prisma.passwordResetToken.findUnique({
+    where: { token },
+  });
 
   if (!resetToken || resetToken.used || new Date() > resetToken.expiresAt) {
-    return res.status(400).json({ error: 'Ongeldige of verlopen link' });
+    return res.status(400).json({ error: "Ongeldige of verlopen link" });
   }
 
   const hashedPassword = await hashPassword(password);
@@ -35,5 +41,5 @@ export default async function handler(req, res) {
     }),
   ]);
 
-  return res.status(200).json({ message: 'Wachtwoord succesvol gewijzigd' });
+  return res.status(200).json({ message: "Wachtwoord succesvol gewijzigd" });
 }

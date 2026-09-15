@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-export default function FavoriteButton({ listingId, initialFavorited = false }) {
+export default function FavoriteButton({
+  listingId,
+  initialFavorited = false,
+}) {
   const [favorited, setFavorited] = useState(initialFavorited);
   const [loading, setLoading] = useState(false);
 
@@ -12,13 +15,13 @@ export default function FavoriteButton({ listingId, initialFavorited = false }) 
     try {
       if (favorited) {
         const res = await fetch(`/api/favorites?listingId=${listingId}`, {
-          method: 'DELETE',
+          method: "DELETE",
         });
         if (res.ok) setFavorited(false);
       } else {
-        const res = await fetch('/api/favorites', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const res = await fetch("/api/favorites", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ listingId }),
         });
         if (res.ok || res.status === 409) setFavorited(true);
@@ -36,7 +39,7 @@ export default function FavoriteButton({ listingId, initialFavorited = false }) 
       disabled={loading}
       className="absolute top-3 right-3 z-10 bg-[#060a14]/70 rounded-full w-8 h-8 flex items-center justify-center text-lg hover:bg-[#060a14] transition"
     >
-      {favorited ? '❤️' : '🤍'}
+      {favorited ? "❤️" : "🤍"}
     </button>
   );
 }

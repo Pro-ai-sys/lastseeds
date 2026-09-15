@@ -1,21 +1,24 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
   const categorie = await prisma.seedCategory.upsert({
-    where: { name: 'Kamerplanten' },
+    where: { name: "Kamerplanten" },
     update: {},
-    create: { name: 'Kamerplanten', description: 'Zaden voor planten binnenshuis' },
+    create: {
+      name: "Kamerplanten",
+      description: "Zaden voor planten binnenshuis",
+    },
   });
 
   const soorten = [
-    'Vetplant',
-    'Vlijtig Liesje',
-    'Basilicum (pot)',
-    'Cactus',
-    'Aloë Vera',
-    'Monstera',
-    'Palm',
+    "Vetplant",
+    "Vlijtig Liesje",
+    "Basilicum (pot)",
+    "Cactus",
+    "Aloë Vera",
+    "Monstera",
+    "Palm",
   ];
 
   for (const naam of soorten) {

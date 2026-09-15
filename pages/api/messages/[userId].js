@@ -1,13 +1,13 @@
-import { prisma } from '@/lib/prisma';
-import { getUserFromReq } from '@/lib/auth';
+import { prisma } from "@/lib/prisma";
+import { getUserFromReq } from "@/lib/auth";
 
 export default async function handler(req, res) {
   const user = getUserFromReq(req);
-  if (!user) return res.status(401).json({ error: 'Niet ingelogd' });
+  if (!user) return res.status(401).json({ error: "Niet ingelogd" });
 
   const { userId: otherUserId } = req.query;
 
-  if (req.method === 'GET') {
+  if (req.method === "GET") {
     const messages = await prisma.message.findMany({
       where: {
         OR: [
@@ -15,7 +15,7 @@ export default async function handler(req, res) {
           { senderId: otherUserId, receiverId: user.userId },
         ],
       },
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: "asc" },
     });
 
     await prisma.message.updateMany({
@@ -31,5 +31,5 @@ export default async function handler(req, res) {
     return res.status(200).json({ messages, otherUser });
   }
 
-  return res.status(405).json({ error: 'Method not allowed' });
+  return res.status(405).json({ error: "Method not allowed" });
 }

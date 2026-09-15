@@ -3,6 +3,7 @@
 Overzicht van de volledige setup, zodat je dit later kunt reproduceren of aan iemand anders kunt uitleggen.
 
 ## Techstack
+
 - Next.js 13 (Pages Router)
 - Prisma 5 + PostgreSQL (gehost via Prisma Postgres op Vercel)
 - Tailwind CSS 3

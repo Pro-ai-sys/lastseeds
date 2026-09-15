@@ -1,19 +1,22 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
   const categorie = await prisma.seedCategory.upsert({
-    where: { name: 'Paddenstoelen' },
+    where: { name: "Paddenstoelen" },
     update: {},
-    create: { name: 'Paddenstoelen', description: 'Sporen en broedsel van eetbare paddenstoelen' },
+    create: {
+      name: "Paddenstoelen",
+      description: "Sporen en broedsel van eetbare paddenstoelen",
+    },
   });
 
   const soorten = [
-    'Champignon',
-    'Oesterzwam',
-    'Shiitake',
-    'Portobello',
-    'Kastanjechampignon',
+    "Champignon",
+    "Oesterzwam",
+    "Shiitake",
+    "Portobello",
+    "Kastanjechampignon",
   ];
 
   for (const naam of soorten) {

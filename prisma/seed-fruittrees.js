@@ -1,26 +1,29 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
   const categorie = await prisma.seedCategory.upsert({
-    where: { name: 'Fruitbomen' },
+    where: { name: "Fruitbomen" },
     update: {},
-    create: { name: 'Fruitbomen', description: 'Zaden en pitten van fruitbomen' },
+    create: {
+      name: "Fruitbomen",
+      description: "Zaden en pitten van fruitbomen",
+    },
   });
 
   const soorten = [
-    'Appel',
-    'Peer',
-    'Kers',
-    'Pruim',
-    'Perzik',
-    'Abrikoos',
-    'Vijg',
-    'Walnoot',
-    'Hazelnoot',
-    'Kastanje',
-    'Mispel',
-    'Kweepeer',
+    "Appel",
+    "Peer",
+    "Kers",
+    "Pruim",
+    "Perzik",
+    "Abrikoos",
+    "Vijg",
+    "Walnoot",
+    "Hazelnoot",
+    "Kastanje",
+    "Mispel",
+    "Kweepeer",
   ];
 
   for (const naam of soorten) {

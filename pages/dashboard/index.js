@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import Header from '@/components/Header';
-import ImageUploader from '@/components/ImageUploader';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import Header from "@/components/Header";
+import ImageUploader from "@/components/ImageUploader";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -11,11 +11,22 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
-    title: '', description: '', quantity: 1, quantityUnit: 'zaadjes', isHeirloom: true,
-    listingType: 'sale', price: '', categoryId: '', speciesId: '',
-    originCountry: '', plantingMonth: '', startPrice: '', auctionDays: 7, photos: [],
+    title: "",
+    description: "",
+    quantity: 1,
+    quantityUnit: "zaadjes",
+    isHeirloom: true,
+    listingType: "sale",
+    price: "",
+    categoryId: "",
+    speciesId: "",
+    originCountry: "",
+    plantingMonth: "",
+    startPrice: "",
+    auctionDays: 7,
+    photos: [],
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
@@ -25,16 +36,16 @@ export default function Dashboard() {
   async function loadData() {
     try {
       const [listingsRes, categoriesRes, meRes] = await Promise.all([
-        fetch('/api/listings'),
-        fetch('/api/categories'),
-        fetch('/api/auth/me'),
+        fetch("/api/listings"),
+        fetch("/api/categories"),
+        fetch("/api/auth/me"),
       ]);
 
       const meData = await meRes.json();
       setCurrentUser(meData.user);
 
       if (listingsRes.status === 401) {
-        router.push('/login');
+        router.push("/login");
         return;
       }
 
@@ -52,51 +63,79 @@ export default function Dashboard() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if (name === 'categoryId') {
-      setForm({ ...form, categoryId: value, speciesId: '' });
+    if (name === "categoryId") {
+      setForm({ ...form, categoryId: value, speciesId: "" });
     } else {
-      setForm({ ...form, [name]: type === 'checkbox' ? checked : value });
+      setForm({ ...form, [name]: type === "checkbox" ? checked : value });
     }
   };
 
   const setPhotos = (updater) => {
     setForm((prev) => ({
       ...prev,
-      photos: typeof updater === 'function' ? updater(prev.photos) : updater,
+      photos: typeof updater === "function" ? updater(prev.photos) : updater,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
-    const res = await fetch('/api/listings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const res = await fetch("/api/listings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...form, photoUrls: form.photos }),
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-      setError(data.error || 'Er ging iets mis');
+      setError(data.error || "Er ging iets mis");
       return;
     }
 
     setForm({
-      title: '', description: '', quantity: 1, quantityUnit: 'zaadjes', isHeirloom: true,
-      listingType: 'sale', price: '', categoryId: '', speciesId: '',
-      originCountry: '', plantingMonth: '', startPrice: '', auctionDays: 7, photos: [],
+      title: "",
+      description: "",
+      quantity: 1,
+      quantityUnit: "zaadjes",
+      isHeirloom: true,
+      listingType: "sale",
+      price: "",
+      categoryId: "",
+      speciesId: "",
+      originCountry: "",
+      plantingMonth: "",
+      startPrice: "",
+      auctionDays: 7,
+      photos: [],
     });
     setShowForm(false);
     loadData();
   };
 
   const selectedCategory = categories.find((c) => c.id === form.categoryId);
-  const maanden = ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Augustus', 'September', 'Oktober', 'November', 'December'];
+  const maanden = [
+    "Januari",
+    "Februari",
+    "Maart",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Augustus",
+    "September",
+    "Oktober",
+    "November",
+    "December",
+  ];
 
   if (loading) {
-    return <div className="min-h-screen bg-[#060a14] text-white flex items-center justify-center">Laden...</div>;
+    return (
+      <div className="min-h-screen bg-[#060a14] text-white flex items-center justify-center">
+        Laden...
+      </div>
+    );
   }
 
   return (
@@ -104,8 +143,11 @@ export default function Dashboard() {
       <Header />
       {false && currentUser && !currentUser.mollieOnboarded && (
         <div className="bg-yellow-900/30 border-b border-yellow-700 px-6 py-3 text-center text-sm text-yellow-200">
-          Om zaden te kunnen verkopen of veilen, moet je eerst je Mollie-account koppelen.{' '}
-          <Link href="/api/mollie/connect" className="underline font-semibold">Koppel nu</Link>
+          Om zaden te kunnen verkopen of veilen, moet je eerst je Mollie-account
+          koppelen.{" "}
+          <Link href="/api/mollie/connect" className="underline font-semibold">
+            Koppel nu
+          </Link>
         </div>
       )}
       <div className="px-6 py-10">
@@ -113,7 +155,10 @@ export default function Dashboard() {
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-2xl font-bold">Mijn zaden</h1>
-              <Link href="/dashboard/trades" className="text-sm text-[#4a9eff] hover:underline">
+              <Link
+                href="/dashboard/trades"
+                className="text-sm text-[#4a9eff] hover:underline"
+              >
                 Bekijk ruilverzoeken →
               </Link>
             </div>
@@ -121,12 +166,15 @@ export default function Dashboard() {
               onClick={() => setShowForm(!showForm)}
               className="bg-[#4a9eff] hover:bg-[#3a8eef] px-4 py-2 rounded-lg font-semibold transition"
             >
-              {showForm ? 'Annuleren' : '+ Nieuwe listing'}
+              {showForm ? "Annuleren" : "+ Nieuwe listing"}
             </button>
           </div>
 
           {showForm && (
-            <form onSubmit={handleSubmit} className="bg-[#101828] border border-[#2a3a55] rounded-2xl p-6 mb-8 space-y-4">
+            <form
+              onSubmit={handleSubmit}
+              className="bg-[#101828] border border-[#2a3a55] rounded-2xl p-6 mb-8 space-y-4"
+            >
               {error && (
                 <div className="bg-red-900/40 border border-red-700 text-red-300 rounded-lg px-4 py-2 text-sm">
                   {error}
@@ -134,17 +182,28 @@ export default function Dashboard() {
               )}
 
               <div>
-                <label className="block text-sm text-gray-300 mb-1">Titel</label>
+                <label className="block text-sm text-gray-300 mb-1">
+                  Titel
+                </label>
                 <input
-                  type="text" name="title" required value={form.title} onChange={handleChange}
+                  type="text"
+                  name="title"
+                  required
+                  value={form.title}
+                  onChange={handleChange}
                   className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm text-gray-300 mb-1">Beschrijving</label>
+                <label className="block text-sm text-gray-300 mb-1">
+                  Beschrijving
+                </label>
                 <textarea
-                  name="description" value={form.description} onChange={handleChange} rows={3}
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
+                  rows={3}
                   className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                 />
               </div>
@@ -153,59 +212,85 @@ export default function Dashboard() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Categorie</label>
+                  <label className="block text-sm text-gray-300 mb-1">
+                    Categorie
+                  </label>
                   <select
-                    name="categoryId" required value={form.categoryId} onChange={handleChange}
+                    name="categoryId"
+                    required
+                    value={form.categoryId}
+                    onChange={handleChange}
                     className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                   >
                     <option value="">Kies categorie</option>
                     {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Soort</label>
+                  <label className="block text-sm text-gray-300 mb-1">
+                    Soort
+                  </label>
                   <select
-                    name="speciesId" required value={form.speciesId} onChange={handleChange}
+                    name="speciesId"
+                    required
+                    value={form.speciesId}
+                    onChange={handleChange}
                     disabled={!selectedCategory}
                     className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff] disabled:opacity-50"
                   >
                     <option value="">Kies soort</option>
                     {selectedCategory?.species.map((sp) => (
-                      <option key={sp.id} value={sp.id}>{sp.name}</option>
+                      <option key={sp.id} value={sp.id}>
+                        {sp.name}
+                      </option>
                     ))}
                   </select>
                 </div>
               </div>
 
-              {selectedCategory?.name === 'Cannabis' && (
+              {selectedCategory?.name === "Cannabis" && (
                 <div className="bg-amber-900/30 border border-amber-700 rounded-lg px-3 py-2 text-xs text-amber-200">
-                  ⚠️ Wetgeving rond bezit, verkoop en teelt van cannabiszaden verschilt per land.
-                  Zorg dat je listing voldoet aan de wetgeving van je eigen land.
+                  ⚠️ Wetgeving rond bezit, verkoop en teelt van cannabiszaden
+                  verschilt per land. Zorg dat je listing voldoet aan de
+                  wetgeving van je eigen land.
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Land van herkomst</label>
+                  <label className="block text-sm text-gray-300 mb-1">
+                    Land van herkomst
+                  </label>
                   <input
-                    type="text" name="originCountry" value={form.originCountry} onChange={handleChange}
+                    type="text"
+                    name="originCountry"
+                    value={form.originCountry}
+                    onChange={handleChange}
                     placeholder="Bijv. Nederland"
                     className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Plantmaand</label>
+                  <label className="block text-sm text-gray-300 mb-1">
+                    Plantmaand
+                  </label>
                   <select
-                    name="plantingMonth" value={form.plantingMonth} onChange={handleChange}
+                    name="plantingMonth"
+                    value={form.plantingMonth}
+                    onChange={handleChange}
                     className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                   >
                     <option value="">Kies maand</option>
                     {maanden.map((m) => (
-                      <option key={m} value={m}>{m}</option>
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -213,9 +298,13 @@ export default function Dashboard() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Type</label>
+                  <label className="block text-sm text-gray-300 mb-1">
+                    Type
+                  </label>
                   <select
-                    name="listingType" value={form.listingType} onChange={handleChange}
+                    name="listingType"
+                    value={form.listingType}
+                    onChange={handleChange}
                     className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                   >
                     <option value="sale">Verkopen</option>
@@ -225,14 +314,22 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Hoeveelheid</label>
+                  <label className="block text-sm text-gray-300 mb-1">
+                    Hoeveelheid
+                  </label>
                   <div className="flex gap-2">
                     <input
-                      type="number" name="quantity" min="1" value={form.quantity} onChange={handleChange}
+                      type="number"
+                      name="quantity"
+                      min="1"
+                      value={form.quantity}
+                      onChange={handleChange}
                       className="w-2/3 bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                     />
                     <select
-                      name="quantityUnit" value={form.quantityUnit} onChange={handleChange}
+                      name="quantityUnit"
+                      value={form.quantityUnit}
+                      onChange={handleChange}
                       className="w-1/3 bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                     >
                       <option value="zaadjes">zaadjes</option>
@@ -242,29 +339,47 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {form.listingType === 'sale' && (
+              {form.listingType === "sale" && (
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Prijs</label>
+                  <label className="block text-sm text-gray-300 mb-1">
+                    Prijs
+                  </label>
                   <input
-                    type="number" step="0.01" name="price" value={form.price} onChange={handleChange}
+                    type="number"
+                    step="0.01"
+                    name="price"
+                    value={form.price}
+                    onChange={handleChange}
                     className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                   />
                 </div>
               )}
 
-              {form.listingType === 'auction' && (
+              {form.listingType === "auction" && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1">Startprijs (€)</label>
+                    <label className="block text-sm text-gray-300 mb-1">
+                      Startprijs (€)
+                    </label>
                     <input
-                      type="number" step="0.01" name="startPrice" value={form.startPrice} onChange={handleChange}
+                      type="number"
+                      step="0.01"
+                      name="startPrice"
+                      value={form.startPrice}
+                      onChange={handleChange}
                       className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-300 mb-1">Looptijd (dagen)</label>
+                    <label className="block text-sm text-gray-300 mb-1">
+                      Looptijd (dagen)
+                    </label>
                     <input
-                      type="number" min="1" name="auctionDays" value={form.auctionDays} onChange={handleChange}
+                      type="number"
+                      min="1"
+                      name="auctionDays"
+                      value={form.auctionDays}
+                      onChange={handleChange}
                       className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                     />
                   </div>
@@ -272,7 +387,12 @@ export default function Dashboard() {
               )}
 
               <label className="flex items-center gap-2 text-sm text-gray-300">
-                <input type="checkbox" name="isHeirloom" checked={form.isHeirloom} onChange={handleChange} />
+                <input
+                  type="checkbox"
+                  name="isHeirloom"
+                  checked={form.isHeirloom}
+                  onChange={handleChange}
+                />
                 Dit zijn ongemanipuleerde (heirloom) zaden
               </label>
 
@@ -286,11 +406,16 @@ export default function Dashboard() {
           )}
 
           {listings.length === 0 ? (
-            <p className="text-gray-400">Je hebt nog geen listings geplaatst.</p>
+            <p className="text-gray-400">
+              Je hebt nog geen listings geplaatst.
+            </p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {listings.map((listing) => (
-                <div key={listing.id} className="bg-[#101828] border border-[#2a3a55] rounded-2xl p-5">
+                <div
+                  key={listing.id}
+                  className="bg-[#101828] border border-[#2a3a55] rounded-2xl p-5"
+                >
                   {listing.photos && listing.photos.length > 0 && (
                     <img
                       src={listing.photos[0].url}
@@ -301,20 +426,45 @@ export default function Dashboard() {
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-bold text-lg">{listing.title}</h3>
                     {listing.isHeirloom && (
-                      <span className="text-xs bg-green-900/40 text-green-300 px-2 py-1 rounded-full">🌱 Heirloom</span>
+                      <span className="text-xs bg-green-900/40 text-green-300 px-2 py-1 rounded-full">
+                        🌱 Heirloom
+                      </span>
                     )}
                   </div>
-                  <p className="text-gray-400 text-sm mb-3">{listing.description}</p>
+                  <p className="text-gray-400 text-sm mb-3">
+                    {listing.description}
+                  </p>
                   <div className="text-sm text-gray-300 space-y-1">
-                    <p>{listing.species?.category?.name} · {listing.species?.name}</p>
-                    <p>{listing.quantity} {listing.quantityUnit}</p>
-                    {listing.originCountry && <p>Herkomst: {listing.originCountry}</p>}
-                    {listing.plantingMonth && <p>Planten: {listing.plantingMonth}</p>}
-                    <p className="capitalize">{listing.listingType === 'sale' ? 'Verkoop' : listing.listingType === 'auction' ? 'Veiling' : 'Ruil'}</p>
+                    <p>
+                      {listing.species?.category?.name} ·{" "}
+                      {listing.species?.name}
+                    </p>
+                    <p>
+                      {listing.quantity} {listing.quantityUnit}
+                    </p>
+                    {listing.originCountry && (
+                      <p>Herkomst: {listing.originCountry}</p>
+                    )}
+                    {listing.plantingMonth && (
+                      <p>Planten: {listing.plantingMonth}</p>
+                    )}
+                    <p className="capitalize">
+                      {listing.listingType === "sale"
+                        ? "Verkoop"
+                        : listing.listingType === "auction"
+                          ? "Veiling"
+                          : "Ruil"}
+                    </p>
                   </div>
-                  {listing.price && <p className="text-[#4a9eff] font-semibold mt-2">€{listing.price}</p>}
-                  {listing.listingType === 'auction' && listing.auction && (
-                    <p className="text-[#4a9eff] font-semibold mt-2">Startprijs: €{listing.auction.startPrice}</p>
+                  {listing.price && (
+                    <p className="text-[#4a9eff] font-semibold mt-2">
+                      €{listing.price}
+                    </p>
+                  )}
+                  {listing.listingType === "auction" && listing.auction && (
+                    <p className="text-[#4a9eff] font-semibold mt-2">
+                      Startprijs: €{listing.auction.startPrice}
+                    </p>
                   )}
                 </div>
               ))}
