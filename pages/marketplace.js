@@ -8,32 +8,48 @@ import LegalDisclaimer from "@/components/LegalDisclaimer";
 import FavoriteButton from "@/components/FavoriteButton";
 import { prisma } from "@/lib/prisma";
 
-export async function getServerSideProps() {
-  const listings = await prisma.seedListing.findMany({
-    where: { status: "active" },
-    include: {
-      species: { include: { category: true } },
-      owner: { select: { username: true } },
-      auction: true,
-      photos: { orderBy: { order: "asc" } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+const PAGE_SIZE = 24;
 
-  const categories = await prisma.seedCategory.findMany({
-    include: { species: { orderBy: { name: "asc" } } },
-    orderBy: { name: "asc" },
-  });
+export async function getServerSideProps({ query }) {
+  const page = parseInt(query.page) || 1;
+  const skip = (page - 1) * PAGE_SIZE;
+
+  const [listings, totalCount, categories] = await Promise.all([
+    prisma.seedListing.findMany({
+      where: { status: "active" },
+      include: {
+        species: { include: { category: true } },
+        owner: { select: { username: true } },
+        auction: true,
+        photos: { orderBy: { order: "asc" } },
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: PAGE_SIZE,
+    }),
+    prisma.seedListing.count({ where: { status: "active" } }),
+    prisma.seedCategory.findMany({
+      include: { species: { orderBy: { name: "asc" } } },
+      orderBy: { name: "asc" },
+    }),
+  ]);
 
   return {
     props: {
       initialListings: JSON.parse(JSON.stringify(listings)),
       initialCategories: JSON.parse(JSON.stringify(categories)),
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / PAGE_SIZE),
     },
   };
 }
 
-export default function Marketplace({ initialListings, initialCategories }) {
+export default function Marketplace({
+  initialListings,
+  initialCategories,
+  currentPage,
+  totalPages,
+}) {
   const router = useRouter();
   const { type, species } = router.query;
   const [listings] = useState(initialListings);
@@ -225,6 +241,36 @@ export default function Marketplace({ initialListings, initialCategories }) {
                 </div>
               </div>
             ))
+          )}
+
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 mt-10">
+              {currentPage > 1 && (
+                <Link
+                  href={{
+                    pathname: "/marketplace",
+                    query: { ...router.query, page: currentPage - 1 },
+                  }}
+                  className="bg-[#101828] border border-[#2a3a55] hover:border-[#4a9eff] px-4 py-2 rounded-lg text-sm transition"
+                >
+                  ← Vorige
+                </Link>
+              )}
+              <span className="text-gray-400 text-sm px-3">
+                Pagina {currentPage} van {totalPages}
+              </span>
+              {currentPage < totalPages && (
+                <Link
+                  href={{
+                    pathname: "/marketplace",
+                    query: { ...router.query, page: currentPage + 1 },
+                  }}
+                  className="bg-[#101828] border border-[#2a3a55] hover:border-[#4a9eff] px-4 py-2 rounded-lg text-sm transition"
+                >
+                  Volgende →
+                </Link>
+              )}
+            </div>
           )}
         </div>
       </div>
