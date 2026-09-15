@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     const auction = await prisma.auction.findUnique({
       where: { id },
       include: {
-        listing: { include: { species: { include: { category: true } }, owner: { select: { username: true } } } },
+        listing: { include: { species: { include: { category: true } }, owner: { select: { username: true } }, photos: { orderBy: { order: 'asc' } } } },
         bids: { orderBy: { amount: 'desc' }, include: { bidder: { select: { username: true } } } },
       },
     });
