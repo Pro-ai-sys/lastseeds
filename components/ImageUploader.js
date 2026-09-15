@@ -31,7 +31,7 @@ export default function ImageUploader({ photos, setPhotos }) {
   return (
     <div>
       <label className="block text-sm text-gray-300 mb-1">
-        Foto's ({photos.length}/4)
+         Foto&apos;s ({photos.length}/4)
       </label>
 
       <div className="grid grid-cols-4 gap-2 mb-2">
