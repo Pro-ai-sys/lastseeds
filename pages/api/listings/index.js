@@ -27,15 +27,16 @@ export default async function handler(req, res) {
     } = req.body;
 
     if (!title || !speciesId) {
-        return res.status(400).json({ error: 'Titel en soort zijn verplicht' });
-      }
-      
-      if ((listingType === 'sale' || listingType === 'auction')) {
-        const dbUser = await prisma.user.findUnique({ where: { id: user.userId } });
-        if (!dbUser.mollieOnboarded) {
-          return res.status(403).json({ error: 'Koppel eerst je Mollie-account om te kunnen verkopen of veilen' });
-        }
-      }
+      return res.status(400).json({ error: 'Titel en soort zijn verplicht' });
+    }
+
+    // Mollie-verplichting tijdelijk uitgeschakeld voor testfase
+    // if ((listingType === 'sale' || listingType === 'auction')) {
+    //   const dbUser = await prisma.user.findUnique({ where: { id: user.userId } });
+    //   if (!dbUser.mollieOnboarded) {
+    //     return res.status(403).json({ error: 'Koppel eerst je Mollie-account om te kunnen verkopen of veilen' });
+    //   }
+    // }
 
     if (listingType === 'auction' && (!startPrice || !auctionDays)) {
       return res.status(400).json({ error: 'Startprijs en duur zijn verplicht voor een veiling' });

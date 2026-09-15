@@ -102,7 +102,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-[#060a14] text-white">
       <Header />
-      {currentUser && !currentUser.mollieOnboarded && (
+      {false && currentUser && !currentUser.mollieOnboarded && (
         <div className="bg-yellow-900/30 border-b border-yellow-700 px-6 py-3 text-center text-sm text-yellow-200">
           Om zaden te kunnen verkopen of veilen, moet je eerst je Mollie-account koppelen.{' '}
           <Link href="/api/mollie/connect" className="underline font-semibold">Koppel nu</Link>
@@ -211,12 +211,8 @@ export default function Dashboard() {
                     name="listingType" value={form.listingType} onChange={handleChange}
                     className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                   >
-                    <option value="sale" disabled={!currentUser?.mollieOnboarded}>
-                      Verkopen {!currentUser?.mollieOnboarded && '(koppel eerst Mollie)'}
-                    </option>
-                    <option value="auction" disabled={!currentUser?.mollieOnboarded}>
-                      Veilen {!currentUser?.mollieOnboarded && '(koppel eerst Mollie)'}
-                    </option>
+                    <option value="sale">Verkopen</option>
+                    <option value="auction">Veilen</option>
                     <option value="trade">Ruilen</option>
                   </select>
                 </div>
