@@ -10,7 +10,11 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     const listings = await prisma.seedListing.findMany({
       where: { ownerId: user.userId },
-      include: { species: { include: { category: true } }, auction: { include: { bids: true } } },
+      include: {
+        species: { include: { category: true } },
+        auction: { include: { bids: true } },
+        photos: { orderBy: { order: 'asc' } },
+      },
       orderBy: { createdAt: 'desc' },
     });
     return res.status(200).json({ listings });
@@ -18,13 +22,20 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     const {
-      title, description, quantity, isHeirloom, listingType, price,
-      speciesId, originCountry, plantingMonth, startPrice, auctionDays,
+      title, description, quantity, quantityUnit, isHeirloom, listingType, price,
+      speciesId, originCountry, plantingMonth, startPrice, auctionDays, photoUrls,
     } = req.body;
 
     if (!title || !speciesId) {
-      return res.status(400).json({ error: 'Titel en soort zijn verplicht' });
-    }
+        return res.status(400).json({ error: 'Titel en soort zijn verplicht' });
+      }
+      
+      if ((listingType === 'sale' || listingType === 'auction')) {
+        const dbUser = await prisma.user.findUnique({ where: { id: user.userId } });
+        if (!dbUser.mollieOnboarded) {
+          return res.status(403).json({ error: 'Koppel eerst je Mollie-account om te kunnen verkopen of veilen' });
+        }
+      }
 
     if (listingType === 'auction' && (!startPrice || !auctionDays)) {
       return res.status(400).json({ error: 'Startprijs en duur zijn verplicht voor een veiling' });
@@ -36,6 +47,7 @@ export default async function handler(req, res) {
           title,
           description,
           quantity: quantity ? parseInt(quantity) : 1,
+          quantityUnit: quantityUnit || 'zaadjes',
           isHeirloom: isHeirloom !== false,
           listingType: listingType || 'sale',
           price: price ? parseFloat(price) : null,
@@ -56,6 +68,16 @@ export default async function handler(req, res) {
             startPrice: parseFloat(startPrice),
             endsAt,
           },
+        });
+      }
+
+      if (photoUrls && photoUrls.length > 0) {
+        await prisma.photo.createMany({
+          data: photoUrls.map((url, index) => ({
+            listingId: listing.id,
+            url,
+            order: index,
+          })),
         });
       }
 

@@ -13,16 +13,19 @@ export default function Home() {
           De laatste zaden op aarde,<br />bewaard voor de toekomst
         </h1>
         <p className="text-gray-400 text-lg mb-8">
-          Na de val is alles anders — behalve de waarde van een goed zaadje.
-          LastSeeds is de marktplaats voor ongemanipuleerde, heirloom groente- en bloemenzaden.
-          Koop, veil, of ruil met andere overlevenden.
+        Een handvol multinationals als Bayer, Corteva en Syngenta bezit vandaag
+        de dag al het patentrecht op een groot deel van ons voedsel — en in de
+        nabije toekomst zullen we steeds afhankelijker worden van hun grillen.
+        Een biologisch, ongemanipuleerd zaadje is daarom goud waard.
+        LastSeeds is de marktplaats voor ongemanipuleerde, heirloom groente-
+        en bloemenzaden. Koop, veil, of ruil met andere hobbyisten.
         </p>
         <div className="flex justify-center gap-4">
           <Link
             href="/register"
             className="bg-[#4a9eff] hover:bg-[#3a8eef] text-white px-6 py-3 rounded-lg font-semibold transition"
           >
-            Word lid van de kluis
+            Word lid van de LastSeeds
           </Link>
           <Link
             href="/login"
@@ -73,7 +76,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="text-center text-gray-500 text-sm py-8 border-t border-[#2a3a55]">
-        LastSeeds — De kluis voor wat overblijft.
+      LastSeeds — Wat overblijft, wanneer al het andere verdwijnt.
       </footer>
     </div>
   );

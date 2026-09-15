@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import PhotoLightbox from '@/components/PhotoLightbox';
 
 export default function Marketplace() {
   const router = useRouter();
@@ -34,6 +35,20 @@ export default function Marketplace() {
       ? 'Zaden die aangeboden worden om te ruilen.'
       : 'Alle zaden die beschikbaar zijn om te kopen, veilen of ruilen.';
 
+  async function handleBuy(listingId) {
+    const res = await fetch('/api/checkout/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ listingId }),
+    });
+    const data = await res.json();
+    if (data.checkoutUrl) {
+      window.location.href = data.checkoutUrl;
+    } else {
+      alert(data.error || 'Er ging iets mis');
+    }
+  }
+
   if (loading) {
     return <div className="min-h-screen bg-[#060a14] text-white flex items-center justify-center">Laden...</div>;
   }
@@ -62,6 +77,7 @@ export default function Marketplace() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {items.map((listing) => (
                   <div key={listing.id} className="bg-[#101828] border border-[#2a3a55] rounded-2xl p-5">
+                    <PhotoLightbox photos={listing.photos} />
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="font-bold text-lg">{listing.title}</h3>
                       {listing.isHeirloom && (
@@ -75,12 +91,25 @@ export default function Marketplace() {
                     <div className="text-xs text-gray-500 space-y-1 mb-2">
                       {listing.originCountry && <p>Herkomst: {listing.originCountry}</p>}
                       {listing.plantingMonth && <p>Planten: {listing.plantingMonth}</p>}
-                      <p>Aangeboden door: {listing.owner?.username}</p>
+                      <p>
+                        Aangeboden door:{' '}
+                        <Link href={`/seller/${listing.ownerId}`} className="text-[#4a9eff] hover:underline">
+                          {listing.owner?.username}
+                        </Link>
+                      </p>
                     </div>
                     <div className="flex justify-between items-center mt-3">
                       <span className="text-xs bg-[#2a3a55] px-2 py-1 rounded-full">{typeLabel[listing.listingType]}</span>
                       {listing.price && <span className="text-[#4a9eff] font-semibold">€{listing.price}</span>}
                     </div>
+                    {listing.listingType === 'sale' && listing.price && (
+                      <button
+                        onClick={() => handleBuy(listing.id)}
+                        className="block w-full mt-3 text-center bg-[#4a9eff] hover:bg-[#3a8eef] py-2 rounded-lg text-sm font-semibold transition"
+                      >
+                        Koop nu
+                      </button>
+                    )}
                     {listing.listingType === 'auction' && listing.auction && (
                       <Link
                         href={`/auction/${listing.auction.id}`}

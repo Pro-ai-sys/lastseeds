@@ -11,6 +11,7 @@ export default async function handler(req, res) {
       species: { include: { category: true } },
       owner: { select: { username: true } },
       auction: true,
+      photos: { orderBy: { order: 'asc' } },
     },
     orderBy: { createdAt: 'desc' },
   });

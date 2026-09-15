@@ -15,12 +15,24 @@ model User {
   role         String    @default("user")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  emailVerified Boolean  @default(false)
+  paymentsAsBuyer  Payment[] @relation("BuyerPayments")
+  paymentsAsSeller Payment[] @relation("SellerPayments")
 
   listings     SeedListing[]
   auctionBids  AuctionBid[]
   tradesSent   TradeRequest[] @relation("TradeSender")
   tradesReceived TradeRequest[] @relation("TradeReceiver")
   resetTokens  PasswordResetToken[]
+  reviewsGiven    Review[]  @relation("ReviewerReviews")
+  reviewsReceived Review[]  @relation("SellerReviews")
+  messagesSent     Message[] @relation("MessageSender")
+  messagesReceived Message[] @relation("MessageReceiver")
+  verificationTokens EmailVerificationToken[]
+  mollieAccessToken   String?
+  mollieRefreshToken  String?
+  mollieOrganizationId String?
+  mollieOnboarded     Boolean @default(false)
 }
 
 model SeedCategory {
@@ -46,11 +58,13 @@ model SeedListing {
   title         String
   description   String?
   quantity      Int       @default(1)
+  quantityUnit  String    @default("zaadjes") // "zaadjes" of "gram"
   isHeirloom    Boolean   @default(true)
   listingType   String    @default("sale")
   price         Float?
   originCountry String?
   plantingMonth String?
+  trackingCode  String?   // optioneel, alleen als verkoper Track&Trace gebruikt
   status        String    @default("active")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -63,6 +77,8 @@ model SeedListing {
 
   auction       Auction?
   tradeRequests TradeRequest[]
+  photos        Photo[]
+  payments      Payment[]
 }
 
 model Auction {
@@ -109,4 +125,83 @@ model PasswordResetToken {
   expiresAt   DateTime
   used        Boolean   @default(false)
   createdAt   DateTime  @default(now())
+}
+
+model Review {
+  id          String    @id @default(cuid())
+  sellerId    String
+  seller      User      @relation("SellerReviews", fields: [sellerId], references: [id])
+  reviewerId  String
+  reviewer    User      @relation("ReviewerReviews", fields: [reviewerId], references: [id])
+  rating      Int       // 1-5
+  comment     String?
+  createdAt   DateTime  @default(now())
+
+  @@unique([sellerId, reviewerId])
+}
+
+model Message {
+  id          String    @id @default(cuid())
+  senderId    String
+  sender      User      @relation("MessageSender", fields: [senderId], references: [id])
+  receiverId  String
+  receiver    User      @relation("MessageReceiver", fields: [receiverId], references: [id])
+  content     String
+  read        Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+}
+
+model EmailVerificationToken {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  token       String    @unique
+  expiresAt   DateTime
+  used        Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+}
+
+model Photo {
+  id          String    @id @default(cuid())
+  url         String
+  listingId   String
+  listing     SeedListing @relation(fields: [listingId], references: [id])
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+}
+
+model Payment {
+  id            String    @id @default(cuid())
+  listingId     String
+  listing       SeedListing @relation(fields: [listingId], references: [id])
+
+  buyerId       String
+  buyer         User      @relation("BuyerPayments", fields: [buyerId], references: [id])
+
+  sellerId      String
+  seller        User      @relation("SellerPayments", fields: [sellerId], references: [id])
+
+  amount        Float
+  status        String    @default("held") // held, released, disputed, refunded
+
+  shippedAt     DateTime?
+  trackingCode  String?
+  releaseAt     DateTime?
+  releasedAt    DateTime?
+
+  dispute       Dispute?
+
+  createdAt     DateTime  @default(now())
+}
+
+model Dispute {
+  id          String    @id @default(cuid())
+  paymentId   String    @unique
+  payment     Payment   @relation(fields: [paymentId], references: [id])
+  reason      String    // "not_received", "damaged", "not_as_described"
+  buyerNote   String?
+  sellerNote  String?
+  status      String    @default("open") // open, resolved_buyer, resolved_seller
+  createdAt   DateTime  @default(now())
+  resolvedAt  DateTime?
 }

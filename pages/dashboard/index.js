@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import ImageUploader from '@/components/ImageUploader';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -10,11 +11,12 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
-    title: '', description: '', quantity: 1, isHeirloom: true,
+    title: '', description: '', quantity: 1, quantityUnit: 'zaadjes', isHeirloom: true,
     listingType: 'sale', price: '', categoryId: '', speciesId: '',
-    originCountry: '', plantingMonth: '', startPrice: '', auctionDays: 7,
+    originCountry: '', plantingMonth: '', startPrice: '', auctionDays: 7, photos: [],
   });
   const [error, setError] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -22,10 +24,14 @@ export default function Dashboard() {
 
   async function loadData() {
     try {
-      const [listingsRes, categoriesRes] = await Promise.all([
+      const [listingsRes, categoriesRes, meRes] = await Promise.all([
         fetch('/api/listings'),
         fetch('/api/categories'),
+        fetch('/api/auth/me'),
       ]);
+
+      const meData = await meRes.json();
+      setCurrentUser(meData.user);
 
       if (listingsRes.status === 401) {
         router.push('/login');
@@ -53,6 +59,13 @@ export default function Dashboard() {
     }
   };
 
+  const setPhotos = (updater) => {
+    setForm((prev) => ({
+      ...prev,
+      photos: typeof updater === 'function' ? updater(prev.photos) : updater,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -60,7 +73,7 @@ export default function Dashboard() {
     const res = await fetch('/api/listings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...form, photoUrls: form.photos }),
     });
 
     const data = await res.json();
@@ -71,9 +84,9 @@ export default function Dashboard() {
     }
 
     setForm({
-      title: '', description: '', quantity: 1, isHeirloom: true,
+      title: '', description: '', quantity: 1, quantityUnit: 'zaadjes', isHeirloom: true,
       listingType: 'sale', price: '', categoryId: '', speciesId: '',
-      originCountry: '', plantingMonth: '', startPrice: '', auctionDays: 7,
+      originCountry: '', plantingMonth: '', startPrice: '', auctionDays: 7, photos: [],
     });
     setShowForm(false);
     loadData();
@@ -89,6 +102,12 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-[#060a14] text-white">
       <Header />
+      {currentUser && !currentUser.mollieOnboarded && (
+        <div className="bg-yellow-900/30 border-b border-yellow-700 px-6 py-3 text-center text-sm text-yellow-200">
+          Om zaden te kunnen verkopen of veilen, moet je eerst je Mollie-account koppelen.{' '}
+          <a href="/api/mollie/connect" className="underline font-semibold">Koppel nu</a>
+        </div>
+      )}
       <div className="px-6 py-10">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-8">
@@ -129,6 +148,8 @@ export default function Dashboard() {
                   className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                 />
               </div>
+
+              <ImageUploader photos={form.photos} setPhotos={setPhotos} />
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -190,18 +211,31 @@ export default function Dashboard() {
                     name="listingType" value={form.listingType} onChange={handleChange}
                     className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                   >
-                    <option value="sale">Verkopen</option>
-                    <option value="auction">Veilen</option>
+                    <option value="sale" disabled={!currentUser?.mollieOnboarded}>
+                      Verkopen {!currentUser?.mollieOnboarded && '(koppel eerst Mollie)'}
+                    </option>
+                    <option value="auction" disabled={!currentUser?.mollieOnboarded}>
+                      Veilen {!currentUser?.mollieOnboarded && '(koppel eerst Mollie)'}
+                    </option>
                     <option value="trade">Ruilen</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">Aantal</label>
-                  <input
-                    type="number" name="quantity" min="1" value={form.quantity} onChange={handleChange}
-                    className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
-                  />
+                  <label className="block text-sm text-gray-300 mb-1">Hoeveelheid</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="number" name="quantity" min="1" value={form.quantity} onChange={handleChange}
+                      className="w-2/3 bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
+                    />
+                    <select
+                      name="quantityUnit" value={form.quantityUnit} onChange={handleChange}
+                      className="w-1/3 bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
+                    >
+                      <option value="zaadjes">zaadjes</option>
+                      <option value="gram">gram</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -254,6 +288,13 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {listings.map((listing) => (
                 <div key={listing.id} className="bg-[#101828] border border-[#2a3a55] rounded-2xl p-5">
+                  {listing.photos && listing.photos.length > 0 && (
+                    <img
+                      src={listing.photos[0].url}
+                      alt=""
+                      className="w-full aspect-video object-cover rounded-lg mb-3"
+                    />
+                  )}
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-bold text-lg">{listing.title}</h3>
                     {listing.isHeirloom && (
@@ -263,6 +304,7 @@ export default function Dashboard() {
                   <p className="text-gray-400 text-sm mb-3">{listing.description}</p>
                   <div className="text-sm text-gray-300 space-y-1">
                     <p>{listing.species?.category?.name} · {listing.species?.name}</p>
+                    <p>{listing.quantity} {listing.quantityUnit}</p>
                     {listing.originCountry && <p>Herkomst: {listing.originCountry}</p>}
                     {listing.plantingMonth && <p>Planten: {listing.plantingMonth}</p>}
                     <p className="capitalize">{listing.listingType === 'sale' ? 'Verkoop' : listing.listingType === 'auction' ? 'Veiling' : 'Ruil'}</p>

@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { hashPassword } from '@/lib/auth';
+import { sendVerificationEmail } from '@/lib/mail';
+import crypto from 'crypto';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -35,8 +37,26 @@ export default async function handler(req, res) {
       },
     });
 
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24);
+
+    await prisma.emailVerificationToken.create({
+      data: {
+        userId: user.id,
+        token,
+        expiresAt,
+      },
+    });
+
+    try {
+      await sendVerificationEmail(user.email, token);
+    } catch (mailError) {
+      console.error('E-mail versturen mislukt:', mailError);
+    }
+
     return res.status(201).json({
-      message: 'Account aangemaakt',
+      message: 'Account aangemaakt. Check je e-mail om te bevestigen.',
       user: { id: user.id, email: user.email, username: user.username },
     });
   } catch (error) {
