@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import PhotoLightbox from '@/components/PhotoLightbox';
 import CategorySidebar from '@/components/CategorySidebar';
 import LegalDisclaimer from '@/components/LegalDisclaimer';
+import FavoriteButton from '@/components/FavoriteButton';
 
 export default function Marketplace() {
   const router = useRouter();
@@ -125,8 +126,9 @@ export default function Marketplace() {
                 <h2 className="text-xl font-bold mb-4 text-[#4a9eff]">{category}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {items.map((listing) => (
-                    <div key={listing.id} className="bg-[#101828] border border-[#2a3a55] rounded-2xl p-5">
-                      <PhotoLightbox photos={listing.photos} />
+                    <div key={listing.id} className="bg-[#101828] border border-[#2a3a55] rounded-2xl p-5 relative">
+                    <FavoriteButton listingId={listing.id} />
+                    <PhotoLightbox photos={listing.photos} />
                       <LegalDisclaimer categoryName={listing.species?.category?.name} />
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="font-bold text-lg">{listing.title}</h3>

@@ -38,6 +38,7 @@ export default function Header({ showNav = true }) {
                 </span>
                 <Link href="/dashboard" className="text-gray-300 hover:text-white">Dashboard</Link>
                 <Link href="/dashboard/profile" className="text-gray-300 hover:text-white">Profiel</Link>
+                <Link href="/dashboard/favorites" className="text-gray-300 hover:text-white">Favorieten</Link>
                 <Link href="/dashboard/messages" className="text-gray-300 hover:text-white">Berichten</Link>
                 {user.role === 'admin' && (
                   <Link href="/admin" className="text-gray-300 hover:text-white">Admin</Link>
