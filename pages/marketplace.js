@@ -7,6 +7,7 @@ import CategorySidebar from "@/components/CategorySidebar";
 import LegalDisclaimer from "@/components/LegalDisclaimer";
 import FavoriteButton from "@/components/FavoriteButton";
 import { prisma } from "@/lib/prisma";
+import ReportButton from "@/components/ReportButton";
 
 const PAGE_SIZE = 24;
 
@@ -248,6 +249,12 @@ export default function Marketplace({
                           Doe een ruilaanbod
                         </Link>
                       )}
+                      <div className="mt-2">
+                        <ReportButton
+                          targetType="listing"
+                          targetId={listing.id}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>

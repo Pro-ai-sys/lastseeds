@@ -45,6 +45,7 @@ model User {
   mollieOnboarded     Boolean @default(false)
   favorites    Favorite[]
   wantedListings WantedListing[]
+  reportsFiled Report[] @relation("ReportsFiled")
 }
 
 model SeedCategory {
@@ -242,5 +243,17 @@ model WantedListing {
   species     SeedSpecies @relation(fields: [speciesId], references: [id])
   description String?
   status      String    @default("active") // active, fulfilled
+  createdAt   DateTime  @default(now())
+}
+
+model Report {
+  id          String    @id @default(cuid())
+  reporterId  String
+  reporter    User      @relation("ReportsFiled", fields: [reporterId], references: [id])
+  targetType  String    // "listing" of "user"
+  targetId    String    // id van de listing of gebruiker
+  reason      String    // "spam", "misleidend", "illegaal", "ongepast", "anders"
+  description String?
+  status      String    @default("open") // open, reviewed, dismissed
   createdAt   DateTime  @default(now())
 }

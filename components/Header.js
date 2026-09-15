@@ -7,11 +7,22 @@ export default function Header({ showNav = true }) {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [loaded, setLoaded] = useState(false);
+  const [notifications, setNotifications] = useState({
+    unreadMessages: 0,
+    pendingTrades: 0,
+  });
 
   useEffect(() => {
     fetch("/api/auth/me")
       .then((res) => res.json())
-      .then((data) => setUser(data.user))
+      .then((data) => {
+        setUser(data.user);
+        if (data.user) {
+          fetch("/api/notifications")
+            .then((res) => res.json())
+            .then((notifData) => setNotifications(notifData));
+        }
+      })
       .finally(() => setLoaded(true));
   }, []);
 
@@ -34,15 +45,6 @@ export default function Header({ showNav = true }) {
           <div className="flex items-center gap-4">
             {loaded && user ? (
               <>
-                <span className="text-sm text-gray-300">
-                  Ingelogd als{" "}
-                  <span className="text-white font-semibold">
-                    {user.username}
-                  </span>
-                  {user.role === "admin" && (
-                    <span className="ml-1 text-xs text-[#4a9eff]">(admin)</span>
-                  )}
-                </span>
                 <Link
                   href="/dashboard"
                   className="text-gray-300 hover:text-white"
@@ -67,14 +69,27 @@ export default function Header({ showNav = true }) {
                 >
                   Ik zoek
                 </Link>
-                <Link href="/wanted" className="text-gray-300 hover:text-white">
-                  Zoeklijst
-                </Link>
                 <Link
                   href="/dashboard/messages"
-                  className="text-gray-300 hover:text-white"
+                  className="text-gray-300 hover:text-white relative"
                 >
                   Berichten
+                  {notifications.unreadMessages > 0 && (
+                    <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                      {notifications.unreadMessages}
+                    </span>
+                  )}
+                </Link>
+                <Link
+                  href="/dashboard/trades"
+                  className="text-gray-300 hover:text-white relative"
+                >
+                  Ruilverzoeken
+                  {notifications.pendingTrades > 0 && (
+                    <span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                      {notifications.pendingTrades}
+                    </span>
+                  )}
                 </Link>
                 {user.role === "admin" && (
                   <Link
@@ -84,6 +99,15 @@ export default function Header({ showNav = true }) {
                     Admin
                   </Link>
                 )}
+                <span className="text-sm text-gray-300">
+                  Ingelogd als{" "}
+                  <span className="text-white font-semibold">
+                    {user.username}
+                  </span>
+                  {user.role === "admin" && (
+                    <span className="ml-1 text-xs text-[#4a9eff]">(admin)</span>
+                  )}
+                </span>
                 <button
                   onClick={handleLogout}
                   className="text-gray-300 hover:text-white"

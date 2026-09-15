@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Header from "@/components/Header";
 import Link from "next/link";
+import ReportButton from "@/components/ReportButton";
 
 export default function SellerProfile() {
   const router = useRouter();
@@ -98,6 +99,9 @@ export default function SellerProfile() {
             >
               Stuur bericht
             </Link>
+          </div>
+          <div className="mt-2">
+            <ReportButton targetType="user" targetId={id} />
           </div>
         </div>
 

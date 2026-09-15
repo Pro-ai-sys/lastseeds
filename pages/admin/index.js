@@ -6,6 +6,7 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [listings, setListings] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [reports, setReports] = useState([]);
   const [newCategory, setNewCategory] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -16,11 +17,13 @@ export default function AdminDashboard() {
 
   async function loadAll() {
     try {
-      const [usersRes, listingsRes, categoriesRes] = await Promise.all([
-        fetch("/api/admin/users"),
-        fetch("/api/admin/listings"),
-        fetch("/api/admin/categories"),
-      ]);
+      const [usersRes, listingsRes, categoriesRes, reportsRes] =
+        await Promise.all([
+          fetch("/api/admin/users"),
+          fetch("/api/admin/listings"),
+          fetch("/api/admin/categories"),
+          fetch("/api/admin/reports"),
+        ]);
 
       if (usersRes.status === 403) {
         setError("Geen toegang — je bent geen admin");
@@ -31,6 +34,7 @@ export default function AdminDashboard() {
       setUsers((await usersRes.json()).users || []);
       setListings((await listingsRes.json()).listings || []);
       setCategories((await categoriesRes.json()).categories || []);
+      setReports((await reportsRes.json()).reports || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -91,6 +95,15 @@ export default function AdminDashboard() {
     loadAll();
   }
 
+  async function updateReportStatus(reportId, status) {
+    await fetch("/api/admin/reports", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reportId, status }),
+    });
+    loadAll();
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#060a14] text-white flex items-center justify-center">
@@ -115,17 +128,25 @@ export default function AdminDashboard() {
           <h1 className="text-2xl font-bold mb-6">Admin-dashboard</h1>
 
           <div className="flex gap-2 mb-8 border-b border-[#2a3a55]">
-            {["users", "listings", "categories"].map((t) => (
+            {["users", "listings", "categories", "reports"].map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
-                className={`px-4 py-2 font-semibold ${tab === t ? "text-[#4a9eff] border-b-2 border-[#4a9eff]" : "text-gray-400"}`}
+                className={`px-4 py-2 font-semibold ${
+                  tab === t
+                    ? "text-[#4a9eff] border-b-2 border-[#4a9eff]"
+                    : "text-gray-400"
+                }`}
               >
                 {t === "users"
                   ? "Gebruikers"
                   : t === "listings"
-                    ? "Listings"
-                    : "Categorieën"}
+                  ? "Listings"
+                  : t === "categories"
+                  ? "Categorieën"
+                  : `Meldingen (${
+                      reports.filter((r) => r.status === "open").length
+                    })`}
               </button>
             ))}
           </div>
@@ -224,6 +245,63 @@ export default function AdminDashboard() {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {tab === "reports" && (
+            <div className="space-y-3">
+              {reports.length === 0 ? (
+                <p className="text-gray-400">Geen meldingen.</p>
+              ) : (
+                reports.map((r) => (
+                  <div
+                    key={r.id}
+                    className="bg-[#101828] border border-[#2a3a55] rounded-xl p-4"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <p className="font-semibold capitalize">{r.reason}</p>
+                        <p className="text-xs text-gray-500">
+                          {r.targetType} · ID: {r.targetId} · Gemeld door:{" "}
+                          {r.reporter?.username}
+                        </p>
+                      </div>
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full ${
+                          r.status === "open"
+                            ? "bg-yellow-900/40 text-yellow-300"
+                            : r.status === "reviewed"
+                            ? "bg-green-900/40 text-green-300"
+                            : "bg-gray-700 text-gray-300"
+                        }`}
+                      >
+                        {r.status}
+                      </span>
+                    </div>
+                    {r.description && (
+                      <p className="text-sm text-gray-300 mb-3">
+                        {r.description}
+                      </p>
+                    )}
+                    {r.status === "open" && (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => updateReportStatus(r.id, "reviewed")}
+                          className="text-xs bg-green-900 hover:bg-green-800 px-3 py-1 rounded-lg"
+                        >
+                          Afgehandeld
+                        </button>
+                        <button
+                          onClick={() => updateReportStatus(r.id, "dismissed")}
+                          className="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-lg"
+                        >
+                          Afwijzen
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
             </div>
           )}
         </div>
