@@ -15,7 +15,17 @@ model User {
   role         String    @default("user")
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
-  emailVerified Boolean  @default(false)
+    emailVerified Boolean  @default(false)
+  firstName     String?
+  lastName      String?
+  bio           String?
+  avatarType    String?  @default("preset1") // preset1, preset2, preset3, custom
+  avatarUrl     String?  // alleen gebruikt als avatarType = custom
+  street        String?
+  houseNumber   String?
+  houseNumberAddition String?
+  postalCode    String?
+  city          String?
   paymentsAsBuyer  Payment[] @relation("BuyerPayments")
   paymentsAsSeller Payment[] @relation("SellerPayments")
 
