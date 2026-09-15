@@ -2,10 +2,20 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
 import { sendVerificationEmail } from "@/lib/mail";
 import crypto from "crypto";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const ip =
+    req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown";
+  const rateLimitResult = await checkRateLimit("register", ip);
+  if (!rateLimitResult.allowed) {
+    return res.status(429).json({
+      error: `Te veel registratiepogingen. Probeer het over ${rateLimitResult.retryAfter} seconden opnieuw.`,
+    });
   }
 
   const { email, username, password } = req.body;

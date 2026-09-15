@@ -2,9 +2,20 @@ import { prisma } from "@/lib/prisma";
 import { verifyPassword, createToken } from "@/lib/auth";
 import { serialize } from "cookie";
 
+import { checkRateLimit } from "@/lib/rateLimit";
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const ip =
+    req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown";
+  const rateLimitResult = await checkRateLimit("login", ip);
+  if (!rateLimitResult.allowed) {
+    return res.status(429).json({
+      error: `Te veel inlogpogingen. Probeer het over ${rateLimitResult.retryAfter} seconden opnieuw.`,
+    });
   }
 
   const { email, password } = req.body;
@@ -38,7 +49,7 @@ export default async function handler(req, res) {
         sameSite: "strict",
         maxAge: 60 * 60 * 24 * 7,
         path: "/",
-      }),
+      })
     );
 
     return res.status(200).json({
