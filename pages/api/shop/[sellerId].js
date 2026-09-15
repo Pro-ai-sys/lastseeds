@@ -22,6 +22,12 @@ export default async function handler(req, res) {
 
   if (!seller) return res.status(404).json({ error: "Verkoper niet gevonden" });
 
+  const motherPlants = await prisma.motherPlant.findMany({
+    where: { userId: sellerId },
+    include: { species: { include: { category: true } } },
+    orderBy: { yearAcquired: "asc" },
+  });
+
   const listings = await prisma.seedListing.findMany({
     where: { ownerId: sellerId, status: "active" },
     include: {
@@ -32,5 +38,5 @@ export default async function handler(req, res) {
     orderBy: { createdAt: "desc" },
   });
 
-  return res.status(200).json({ seller, listings });
+  return res.status(200).json({ seller, listings, motherPlants });
 }

@@ -38,7 +38,7 @@ export default function Shop() {
     );
   }
 
-  const { seller, listings } = data;
+  const { seller, listings, motherPlants } = data;
   const typeLabel = { sale: "Verkoop", auction: "Veiling", trade: "Ruil" };
 
   const grouped = listings.reduce((acc, listing) => {
@@ -75,6 +75,45 @@ export default function Shop() {
           </div>
         </div>
 
+        {motherPlants && motherPlants.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-xl font-bold mb-1 text-amber-300">
+              🌿 Moederplanten
+            </h2>
+            <p className="text-gray-400 text-sm mb-4">
+              Planten die {seller.username} al jarenlang bewaart en waar elk
+              jaar zaad van geoogst wordt.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {motherPlants.map((mp) => (
+                <div
+                  key={mp.id}
+                  className="bg-amber-900/10 border border-amber-700/40 rounded-2xl p-5"
+                >
+                  {mp.photoUrl && (
+                    <img
+                      src={mp.photoUrl}
+                      alt=""
+                      className="w-full aspect-video object-cover rounded-lg mb-3"
+                    />
+                  )}
+                  <p className="font-bold text-lg">{mp.species?.name}</p>
+                  {mp.species?.latinName && (
+                    <p className="text-xs italic text-gray-500 mb-1">
+                      {mp.species.latinName}
+                    </p>
+                  )}
+                  <p className="text-xs text-amber-300 mb-2">
+                    Sinds {mp.yearAcquired}
+                  </p>
+                  {mp.description && (
+                    <p className="text-sm text-gray-300">{mp.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         {listings.length === 0 ? (
           <p className="text-gray-400">
             Deze verkoper heeft nog geen actieve listings.

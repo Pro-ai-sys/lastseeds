@@ -70,6 +70,12 @@ export default function Header({ showNav = true }) {
                   Ik zoek
                 </Link>
                 <Link
+                  href="/motherplants"
+                  className="text-gray-300 hover:text-white"
+                >
+                  Moederplanten
+                </Link>
+                <Link
                   href="/dashboard/messages"
                   className="text-gray-300 hover:text-white relative"
                 >
