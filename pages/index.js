@@ -92,7 +92,11 @@ export default function Home() {
       </section>
 
       <footer className="text-center text-gray-500 text-sm py-8 border-t border-[#2a3a55]">
-        LastSeeds — Wat overblijft, wanneer al het andere verdwijnt.
+        <p className="mb-3">LastSeeds — Wat overblijft, wanneer al het andere verdwijnt.</p>
+        <div className="flex justify-center gap-4 text-xs">
+          <Link href="/privacy" className="hover:text-white">Privacybeleid</Link>
+          <Link href="/terms" className="hover:text-white">Algemene voorwaarden</Link>
+        </div>
       </footer>
     </div>
   );

@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 export default function CategorySidebar({ categories }) {
   const router = useRouter();
   const [openCategories, setOpenCategories] = useState(
-    categories.reduce((acc, cat) => ({ ...acc, [cat.id]: true }), {})
+    categories.reduce((acc, cat) => ({ ...acc, [cat.id]: false }), {})
   );
 
   function toggleCategory(categoryId) {

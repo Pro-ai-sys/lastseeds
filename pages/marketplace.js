@@ -127,8 +127,8 @@ export default function Marketplace() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {items.map((listing) => (
                     <div key={listing.id} className="bg-[#101828] border border-[#2a3a55] rounded-2xl p-5 relative">
-                    <FavoriteButton listingId={listing.id} />
-                    <PhotoLightbox photos={listing.photos} />
+                      <FavoriteButton listingId={listing.id} />
+                      <PhotoLightbox photos={listing.photos} />
                       <LegalDisclaimer categoryName={listing.species?.category?.name} />
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="font-bold text-lg">{listing.title}</h3>
