@@ -15,7 +15,23 @@ export default async function handler(req, res) {
       ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
       : null;
 
-    return res.status(200).json({ reviews, avgRating, count: reviews.length });
+    const seller = await prisma.user.findUnique({
+      where: { id: sellerId },
+      select: { createdAt: true },
+    });
+
+    let badge = null;
+    if (reviews.length >= 20 && avgRating >= 4.5) badge = 'Topverkoper';
+    else if (reviews.length >= 5 && avgRating >= 4) badge = 'Betrouwbare verkoper';
+    else if (reviews.length >= 1) badge = 'Actieve verkoper';
+
+    return res.status(200).json({
+      reviews,
+      avgRating,
+      count: reviews.length,
+      memberSince: seller?.createdAt,
+      badge,
+    });
   }
 
   if (req.method === 'POST') {

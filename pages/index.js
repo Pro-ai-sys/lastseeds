@@ -1,42 +1,59 @@
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 
 export default function Home() {
+  const [user, setUser] = useState(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => setUser(data.user))
+      .finally(() => setLoaded(true));
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#060a14] text-white">
-      {/* Navigatiebalk */}
       <Header />
 
-      {/* Hero-sectie */}
       <section className="text-center px-6 py-24 max-w-3xl mx-auto">
         <h1 className="text-4xl md:text-5xl font-bold mb-6">
           De laatste zaden op aarde,<br />bewaard voor de toekomst
         </h1>
         <p className="text-gray-400 text-lg mb-8">
-        Een handvol multinationals als Bayer, Corteva en Syngenta bezit vandaag
-        de dag al het patentrecht op een groot deel van ons voedsel — en in de
-        nabije toekomst zullen we steeds afhankelijker worden van hun grillen.
-        Een biologisch, ongemanipuleerd zaadje is daarom goud waard.
-        LastSeeds is de marktplaats voor ongemanipuleerde, heirloom groente-
-        en bloemenzaden. Koop, veil, of ruil met andere hobbyisten.
+          Een biologisch ongemanipuleerd zaadje is goud waard.
+          LastSeeds is de marktplaats voor ongemanipuleerde, heirloom groente- en bloemenzaden.
+          Koop, veil, of ruil met andere hobbyisten.
         </p>
-        <div className="flex justify-center gap-4">
+
+        {loaded && !user && (
+          <div className="flex justify-center gap-4">
+            <Link
+              href="/register"
+              className="bg-[#4a9eff] hover:bg-[#3a8eef] text-white px-6 py-3 rounded-lg font-semibold transition"
+            >
+              Word lid van LastSeeds
+            </Link>
+            <Link
+              href="/login"
+              className="border border-[#2a3a55] hover:border-[#4a9eff] px-6 py-3 rounded-lg font-semibold transition"
+            >
+              Inloggen
+            </Link>
+          </div>
+        )}
+
+        {loaded && user && (
           <Link
-            href="/register"
-            className="bg-[#4a9eff] hover:bg-[#3a8eef] text-white px-6 py-3 rounded-lg font-semibold transition"
+            href="/dashboard"
+            className="inline-block bg-[#4a9eff] hover:bg-[#3a8eef] text-white px-6 py-3 rounded-lg font-semibold transition"
           >
-            Word lid van de LastSeeds
+            Ga naar mijn dashboard
           </Link>
-          <Link
-            href="/login"
-            className="border border-[#2a3a55] hover:border-[#4a9eff] px-6 py-3 rounded-lg font-semibold transition"
-          >
-            Inloggen
-          </Link>
-        </div>
+        )}
       </section>
 
-      {/* Kenmerken-sectie */}
       <section className="px-6 py-16 border-t border-[#2a3a55]">
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
           <Link
@@ -74,9 +91,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="text-center text-gray-500 text-sm py-8 border-t border-[#2a3a55]">
-      LastSeeds — Wat overblijft, wanneer al het andere verdwijnt.
+        LastSeeds — Wat overblijft, wanneer al het andere verdwijnt.
       </footer>
     </div>
   );

@@ -70,6 +70,16 @@ export default function SellerProfile() {
         </div>
 
         <div className="bg-[#101828] border border-[#2a3a55] rounded-2xl p-6 mb-8">
+          {data.badge && (
+            <span className="inline-block bg-[#4a9eff]/20 text-[#4a9eff] text-xs font-semibold px-3 py-1 rounded-full mb-3">
+              🏆 {data.badge}
+            </span>
+          )}
+          {data.memberSince && (
+            <p className="text-xs text-gray-500 mb-3">
+              Lid sinds {new Date(data.memberSince).toLocaleDateString('nl-NL', { year: 'numeric', month: 'long' })}
+            </p>
+          )}
           {data.avgRating ? (
             <div className="flex items-center gap-2 mb-2">
               <span className="text-3xl font-bold text-[#4a9eff]">{data.avgRating}</span>

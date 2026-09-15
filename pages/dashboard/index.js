@@ -180,6 +180,13 @@ export default function Dashboard() {
                 </div>
               </div>
 
+              {selectedCategory?.name === 'Cannabis' && (
+                <div className="bg-amber-900/30 border border-amber-700 rounded-lg px-3 py-2 text-xs text-amber-200">
+                  ⚠️ Wetgeving rond bezit, verkoop en teelt van cannabiszaden verschilt per land.
+                  Zorg dat je listing voldoet aan de wetgeving van je eigen land.
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-1">Land van herkomst</label>

@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import PhotoLightbox from '@/components/PhotoLightbox';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
