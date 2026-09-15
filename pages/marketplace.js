@@ -114,7 +114,7 @@ export default function Marketplace({
     <div className="min-h-screen bg-[#060a14] text-white">
       <Header />
 
-      <div className="px-6 py-10 max-w-7xl mx-auto flex gap-6">
+      <div className="px-6 py-10 max-w-7xl mx-auto flex flex-col md:flex-row gap-6">
         <CategorySidebar categories={categories} />
 
         <div className="flex-1 min-w-0">
@@ -179,6 +179,12 @@ export default function Marketplace({
                       </div>
                       <p className="text-gray-400 text-sm mb-2">
                         {listing.species?.name}
+                        {listing.species?.latinName && (
+                          <span className="italic text-gray-500">
+                            {" "}
+                            ({listing.species.latinName})
+                          </span>
+                        )}
                       </p>
                       {listing.description && (
                         <p className="text-gray-400 text-sm mb-3">

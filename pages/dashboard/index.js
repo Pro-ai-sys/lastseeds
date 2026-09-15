@@ -20,6 +20,7 @@ export default function Dashboard() {
     price: "",
     categoryId: "",
     speciesId: "",
+    customSpeciesName: "",
     originCountry: "",
     plantingMonth: "",
     seedHistory: "",
@@ -66,7 +67,12 @@ export default function Dashboard() {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     if (name === "categoryId") {
-      setForm({ ...form, categoryId: value, speciesId: "" });
+      setForm({
+        ...form,
+        categoryId: value,
+        speciesId: "",
+        customSpeciesName: "",
+      });
     } else {
       setForm({ ...form, [name]: type === "checkbox" ? checked : value });
     }
@@ -106,6 +112,7 @@ export default function Dashboard() {
       price: "",
       categoryId: "",
       speciesId: "",
+      customSpeciesName: "",
       originCountry: "",
       plantingMonth: "",
       seedHistory: "",
@@ -119,6 +126,10 @@ export default function Dashboard() {
   };
 
   const selectedCategory = categories.find((c) => c.id === form.categoryId);
+  const chosenSpecies =
+    form.speciesId && form.speciesId !== "other"
+      ? selectedCategory?.species.find((sp) => sp.id === form.speciesId)
+      : null;
   const maanden = [
     "Januari",
     "Februari",
@@ -241,7 +252,7 @@ export default function Dashboard() {
                   </label>
                   <select
                     name="speciesId"
-                    required
+                    required={!form.customSpeciesName}
                     value={form.speciesId}
                     onChange={handleChange}
                     disabled={!selectedCategory}
@@ -253,7 +264,28 @@ export default function Dashboard() {
                         {sp.name}
                       </option>
                     ))}
+                    <option value="other">
+                      Overig / mijn soort staat er niet bij
+                    </option>
                   </select>
+
+                  {chosenSpecies?.latinName && (
+                    <p className="text-xs text-gray-500 mt-1 italic">
+                      {chosenSpecies.latinName}
+                    </p>
+                  )}
+
+                  {form.speciesId === "other" && (
+                    <input
+                      type="text"
+                      name="customSpeciesName"
+                      required
+                      value={form.customSpeciesName}
+                      onChange={handleChange}
+                      placeholder="Typ hier de naam van je soort"
+                      className="w-full mt-2 bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -471,6 +503,12 @@ export default function Dashboard() {
                     <p>
                       {listing.species?.category?.name} ·{" "}
                       {listing.species?.name}
+                      {listing.species?.latinName && (
+                        <span className="italic text-gray-500">
+                          {" "}
+                          ({listing.species.latinName})
+                        </span>
+                      )}
                     </p>
                     <p>
                       {listing.quantity} {listing.quantityUnit}
