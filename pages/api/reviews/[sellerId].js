@@ -47,6 +47,21 @@ export default async function handler(req, res) {
         .json({ error: "Je kunt jezelf geen review geven" });
     }
 
+    const hasTrade = await prisma.tradeRequest.findFirst({
+      where: {
+        status: "accepted",
+        senderId: user.userId,
+        listing: { ownerId: sellerId },
+      },
+    });
+
+    if (!hasTrade) {
+      return res.status(403).json({
+        error:
+          "Je kunt alleen een review achterlaten na een geaccepteerde ruil met deze verkoper",
+      });
+    }
+
     const { rating, comment } = req.body;
     if (!rating || rating < 1 || rating > 5) {
       return res.status(400).json({ error: "Rating moet tussen 1 en 5 zijn" });
