@@ -105,7 +105,7 @@ export default function Dashboard() {
       {currentUser && !currentUser.mollieOnboarded && (
         <div className="bg-yellow-900/30 border-b border-yellow-700 px-6 py-3 text-center text-sm text-yellow-200">
           Om zaden te kunnen verkopen of veilen, moet je eerst je Mollie-account koppelen.{' '}
-          <a href="/api/mollie/connect" className="underline font-semibold">Koppel nu</a>
+          <Link href="/api/mollie/connect" className="underline font-semibold">Koppel nu</Link>
         </div>
       )}
       <div className="px-6 py-10">
