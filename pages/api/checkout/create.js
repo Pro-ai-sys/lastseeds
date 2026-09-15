@@ -20,11 +20,19 @@ export default async function handler(req, res) {
   if (listing.ownerId === user.userId) {
     return res.status(400).json({ error: 'Je kunt niet je eigen listing kopen' });
   }
-  if (!listing.owner.mollieOnboarded) {
-    return res.status(400).json({ error: 'Verkoper heeft geen betaalmethode gekoppeld' });
-  }
+
+  // Mollie-verplichting tijdelijk uitgeschakeld voor testfase
+  // if (!listing.owner.mollieOnboarded) {
+  //   return res.status(400).json({ error: 'Verkoper heeft geen betaalmethode gekoppeld' });
+  // }
+
   if (!listing.price) {
     return res.status(400).json({ error: 'Deze listing heeft geen prijs' });
+  }
+
+  // Tijdelijke testfase-melding: betalen is nog niet volledig actief
+  if (!process.env.MOLLIE_API_KEY) {
+    return res.status(400).json({ error: 'Betalen is nog niet beschikbaar tijdens de testfase. Dit komt binnenkort!' });
   }
 
   const feePercentage = parseFloat(process.env.PLATFORM_FEE_PERCENTAGE || '7');
