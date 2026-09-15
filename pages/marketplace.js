@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Header from "@/components/Header";
@@ -6,26 +6,40 @@ import PhotoLightbox from "@/components/PhotoLightbox";
 import CategorySidebar from "@/components/CategorySidebar";
 import LegalDisclaimer from "@/components/LegalDisclaimer";
 import FavoriteButton from "@/components/FavoriteButton";
+import { prisma } from "@/lib/prisma";
 
-export default function Marketplace() {
+export async function getServerSideProps() {
+  const listings = await prisma.seedListing.findMany({
+    where: { status: "active" },
+    include: {
+      species: { include: { category: true } },
+      owner: { select: { username: true } },
+      auction: true,
+      photos: { orderBy: { order: "asc" } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const categories = await prisma.seedCategory.findMany({
+    include: { species: { orderBy: { name: "asc" } } },
+    orderBy: { name: "asc" },
+  });
+
+  return {
+    props: {
+      initialListings: JSON.parse(JSON.stringify(listings)),
+      initialCategories: JSON.parse(JSON.stringify(categories)),
+    },
+  };
+}
+
+export default function Marketplace({ initialListings, initialCategories }) {
   const router = useRouter();
   const { type, species } = router.query;
-  const [listings, setListings] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [listings] = useState(initialListings);
+  const [categories] = useState(initialCategories);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-
-  useEffect(() => {
-    Promise.all([
-      fetch("/api/marketplace").then((res) => res.json()),
-      fetch("/api/categories").then((res) => res.json()),
-    ]).then(([listingsData, categoriesData]) => {
-      setListings(listingsData.listings || []);
-      setCategories(categoriesData.categories || []);
-      setLoading(false);
-    });
-  }, []);
 
   let filtered = type
     ? listings.filter((l) => l.listingType === type)
@@ -39,7 +53,7 @@ export default function Marketplace() {
       (l) =>
         l.title.toLowerCase().includes(term) ||
         l.species?.name.toLowerCase().includes(term) ||
-        l.description?.toLowerCase().includes(term),
+        l.description?.toLowerCase().includes(term)
     );
   }
 
@@ -63,8 +77,8 @@ export default function Marketplace() {
     type === "auction"
       ? "Zeldzame zaden waarop geboden kan worden."
       : type === "trade"
-        ? "Zaden die aangeboden worden om te ruilen."
-        : "Alle zaden die beschikbaar zijn om te kopen, veilen of ruilen.";
+      ? "Zaden die aangeboden worden om te ruilen."
+      : "Alle zaden die beschikbaar zijn om te kopen, veilen of ruilen.";
 
   async function handleBuy(listingId) {
     const res = await fetch("/api/checkout/create", {
@@ -78,14 +92,6 @@ export default function Marketplace() {
     } else {
       alert(data.error || "Er ging iets mis");
     }
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#060a14] text-white flex items-center justify-center">
-        Laden...
-      </div>
-    );
   }
 
   return (
