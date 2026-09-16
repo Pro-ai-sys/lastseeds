@@ -6,6 +6,8 @@ import PhotoLightbox from "@/components/PhotoLightbox";
 import CategorySidebar from "@/components/CategorySidebar";
 import LegalDisclaimer from "@/components/LegalDisclaimer";
 import FavoriteButton from "@/components/FavoriteButton";
+import LocationCircleMap from "@/components/LocationCircleMap";
+import { countries } from "@/lib/countries";
 import { prisma } from "@/lib/prisma";
 import ReportButton from "@/components/ReportButton";
 
@@ -20,7 +22,15 @@ export async function getServerSideProps({ query }) {
       where: { status: "active" },
       include: {
         species: { include: { category: true } },
-        owner: { select: { username: true } },
+        owner: {
+          select: {
+            username: true,
+            city: true,
+            country: true,
+            latitude: true,
+            longitude: true,
+          },
+        },
         auction: true,
         photos: { orderBy: { order: "asc" } },
       },
@@ -57,12 +67,20 @@ export default function Marketplace({
   const [categories] = useState(initialCategories);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+  const [countryFilter, setCountryFilter] = useState("");
 
   let filtered = type
     ? listings.filter((l) => l.listingType === type)
     : listings;
   if (species) {
     filtered = filtered.filter((l) => l.speciesId === species);
+  }
+  const availableCountries = [
+    ...new Set(listings.map((l) => l.owner?.country).filter(Boolean)),
+  ].sort();
+
+  if (countryFilter) {
+    filtered = filtered.filter((l) => l.owner?.country === countryFilter);
   }
   if (searchTerm) {
     const term = searchTerm.toLowerCase();
@@ -149,6 +167,25 @@ export default function Marketplace({
               <option value="price-asc">Prijs: laag naar hoog</option>
               <option value="price-desc">Prijs: hoog naar laag</option>
             </select>
+            {availableCountries.length > 0 && (
+              <select
+                value={countryFilter}
+                onChange={(e) => setCountryFilter(e.target.value)}
+                className="bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
+              >
+                <option value="">Alle landen</option>
+                {availableCountries.map((c) => {
+                  const countryInfo = countries.find(
+                    (country) => country.name === c
+                  );
+                  return (
+                    <option key={c} value={c}>
+                      {countryInfo ? `${countryInfo.flag} ${c}` : c}
+                    </option>
+                  );
+                })}
+              </select>
+            )}
           </div>
 
           {Object.keys(grouped).length === 0 ? (
@@ -214,6 +251,15 @@ export default function Marketplace({
                             {listing.owner?.username}
                           </Link>
                         </p>
+                        {listing.owner?.latitude &&
+                          listing.owner?.longitude && (
+                            <LocationCircleMap
+                              latitude={listing.owner.latitude}
+                              longitude={listing.owner.longitude}
+                              city={listing.owner.city}
+                              compact={true}
+                            />
+                          )}
                       </div>
                       <div className="flex justify-between items-center mt-3">
                         <span className="text-xs bg-[#2a3a55] px-2 py-1 rounded-full">

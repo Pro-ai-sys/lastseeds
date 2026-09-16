@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Avatar from "@/components/Avatar";
+import { countries } from "@/lib/countries";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -164,7 +165,9 @@ export default function ProfilePage() {
                     key={type}
                     type="button"
                     onClick={() => setProfile({ ...profile, avatarType: type })}
-                    className={`rounded-full ${profile.avatarType === type ? "ring-2 ring-[#4a9eff]" : ""}`}
+                    className={`rounded-full ${
+                      profile.avatarType === type ? "ring-2 ring-[#4a9eff]" : ""
+                    }`}
                   >
                     <Avatar type={type} size={48} />
                   </button>
@@ -316,6 +319,22 @@ export default function ProfilePage() {
                     className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
                   />
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-300 mb-1">Land</label>
+                <select
+                  name="country"
+                  value={profile.country || ""}
+                  onChange={handleChange}
+                  className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#4a9eff]"
+                >
+                  <option value="">Kies land</option>
+                  {countries.map((c) => (
+                    <option key={c.code} value={c.name}>
+                      {c.flag} {c.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
