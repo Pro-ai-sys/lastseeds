@@ -7,6 +7,13 @@ export default function AdminDashboard() {
   const [listings, setListings] = useState([]);
   const [categories, setCategories] = useState([]);
   const [reports, setReports] = useState([]);
+  const [partners, setPartners] = useState([]);
+  const [newPartner, setNewPartner] = useState({
+    name: "",
+    logoUrl: "",
+    websiteUrl: "",
+  });
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -17,12 +24,13 @@ export default function AdminDashboard() {
 
   async function loadAll() {
     try {
-      const [usersRes, listingsRes, categoriesRes, reportsRes] =
+      const [usersRes, listingsRes, categoriesRes, reportsRes, partnersRes] =
         await Promise.all([
           fetch("/api/admin/users"),
           fetch("/api/admin/listings"),
           fetch("/api/admin/categories"),
           fetch("/api/admin/reports"),
+          fetch("/api/admin/partners"),
         ]);
 
       if (usersRes.status === 403) {
@@ -35,6 +43,7 @@ export default function AdminDashboard() {
       setListings((await listingsRes.json()).listings || []);
       setCategories((await categoriesRes.json()).categories || []);
       setReports((await reportsRes.json()).reports || []);
+      setPartners((await partnersRes.json()).partners || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -104,6 +113,45 @@ export default function AdminDashboard() {
     loadAll();
   }
 
+  async function handleLogoUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingLogo(true);
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      headers: { "Content-Type": file.type },
+      body: file,
+    });
+    const data = await res.json();
+    if (data.url) {
+      setNewPartner((prev) => ({ ...prev, logoUrl: data.url }));
+    }
+    setUploadingLogo(false);
+  }
+
+  async function addPartner(e) {
+    e.preventDefault();
+    if (!newPartner.name.trim() || !newPartner.logoUrl.trim()) return;
+    await fetch("/api/admin/partners", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newPartner),
+    });
+    setNewPartner({ name: "", logoUrl: "", websiteUrl: "" });
+    loadAll();
+  }
+
+  async function deletePartner(partnerId) {
+    if (!confirm("Weet je zeker dat je deze partner wilt verwijderen?")) return;
+    await fetch("/api/admin/partners", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ partnerId }),
+    });
+    loadAll();
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#060a14] text-white flex items-center justify-center">
@@ -128,27 +176,31 @@ export default function AdminDashboard() {
           <h1 className="text-2xl font-bold mb-6">Admin-dashboard</h1>
 
           <div className="flex gap-2 mb-8 border-b border-[#2a3a55]">
-            {["users", "listings", "categories", "reports"].map((t) => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={`px-4 py-2 font-semibold ${
-                  tab === t
-                    ? "text-[#4a9eff] border-b-2 border-[#4a9eff]"
-                    : "text-gray-400"
-                }`}
-              >
-                {t === "users"
-                  ? "Gebruikers"
-                  : t === "listings"
-                  ? "Listings"
-                  : t === "categories"
-                  ? "Categorieën"
-                  : `Meldingen (${
-                      reports.filter((r) => r.status === "open").length
-                    })`}
-              </button>
-            ))}
+            {["users", "listings", "categories", "reports", "partners"].map(
+              (t) => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  className={`px-4 py-2 font-semibold ${
+                    tab === t
+                      ? "text-[#4a9eff] border-b-2 border-[#4a9eff]"
+                      : "text-gray-400"
+                  }`}
+                >
+                  {t === "users"
+                    ? "Gebruikers"
+                    : t === "listings"
+                    ? "Listings"
+                    : t === "categories"
+                    ? "Categorieën"
+                    : t === "reports"
+                    ? `Meldingen (${
+                        reports.filter((r) => r.status === "open").length
+                      })`
+                    : "Partners"}
+                </button>
+              )
+            )}
           </div>
 
           {tab === "users" && (
@@ -302,6 +354,83 @@ export default function AdminDashboard() {
                   </div>
                 ))
               )}
+            </div>
+          )}
+
+          {tab === "partners" && (
+            <div>
+              <form
+                onSubmit={addPartner}
+                className="bg-[#101828] border border-[#2a3a55] rounded-2xl p-5 mb-6 space-y-3"
+              >
+                <input
+                  type="text"
+                  value={newPartner.name}
+                  onChange={(e) =>
+                    setNewPartner({ ...newPartner, name: e.target.value })
+                  }
+                  placeholder="Naam van de organisatie"
+                  className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white"
+                />
+                <div>
+                  {newPartner.logoUrl && (
+                    <img
+                      src={newPartner.logoUrl}
+                      alt=""
+                      className="h-12 object-contain mb-2"
+                    />
+                  )}
+                  <label className="inline-block bg-[#0a0e1a] border border-dashed border-[#2a3a55] rounded-lg px-4 py-2 text-sm text-gray-400 cursor-pointer hover:border-[#4a9eff]">
+                    {uploadingLogo ? "Bezig met uploaden..." : "Logo uploaden"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      disabled={uploadingLogo}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+                <input
+                  type="text"
+                  value={newPartner.websiteUrl}
+                  onChange={(e) =>
+                    setNewPartner({ ...newPartner, websiteUrl: e.target.value })
+                  }
+                  placeholder="Website URL (optioneel)"
+                  className="w-full bg-[#0a0e1a] border border-[#2a3a55] rounded-lg px-3 py-2 text-white"
+                />
+                <button
+                  type="submit"
+                  className="bg-[#4a9eff] hover:bg-[#3a8eef] px-4 py-2 rounded-lg font-semibold"
+                >
+                  Toevoegen
+                </button>
+              </form>
+
+              <div className="space-y-2">
+                {partners.map((p) => (
+                  <div
+                    key={p.id}
+                    className="bg-[#101828] border border-[#2a3a55] rounded-xl p-3 flex justify-between items-center"
+                  >
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={p.logoUrl}
+                        alt={p.name}
+                        className="h-8 object-contain"
+                      />
+                      <span>{p.name}</span>
+                    </div>
+                    <button
+                      onClick={() => deletePartner(p.id)}
+                      className="text-red-400 hover:text-red-300 text-sm"
+                    >
+                      Verwijderen
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
