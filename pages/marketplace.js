@@ -124,7 +124,9 @@ export default function Marketplace({
       ? "Ruilen"
       : "Aanbod";
   const pageSubtitle =
-    type === "auction"
+    category === "heritage-vee"
+      ? "Traditionele, natuurlijk resistente veerassen — ophalen bij de boer, geen verzending."
+      : type === "auction"
       ? "Zeldzame zaden waarop geboden kan worden."
       : type === "trade"
       ? "Zaden die aangeboden worden om te ruilen."
@@ -148,7 +150,11 @@ export default function Marketplace({
             <h1 className="text-3xl font-bold">{pageTitle}</h1>
             {(type || species) && (
               <Link
-                href="/marketplace"
+                href={
+                  category === "heritage-vee"
+                    ? "/marketplace?category=heritage-vee"
+                    : "/marketplace"
+                }
                 className="text-sm text-[#4a9eff] hover:underline"
               >
                 (toon alles)

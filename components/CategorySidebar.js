@@ -14,7 +14,8 @@ export default function CategorySidebar({ categories }) {
 
   function goToSpecies(speciesId) {
     setMobileOpen(false);
-    router.push(`/marketplace?species=${speciesId}`);
+    const query = { ...router.query, species: speciesId };
+    router.push({ pathname: "/marketplace", query });
   }
 
   const content = (
