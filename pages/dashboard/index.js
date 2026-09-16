@@ -399,6 +399,7 @@ export default function Dashboard() {
                     >
                       <option value="zaadjes">zaadjes</option>
                       <option value="gram">gram</option>
+                      <option value="stuks">stuks</option>
                     </select>
                   </div>
                 </div>

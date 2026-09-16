@@ -19,14 +19,15 @@ export default function Home() {
 
       <section className="text-center px-6 py-24 max-w-3xl mx-auto">
         <h1 className="text-4xl md:text-5xl font-bold mb-6">
-          De laatste zaden op aarde,
+          Het laatste erfgoed op aarde,
           <br />
           bewaard voor de toekomst
         </h1>
         <p className="text-gray-400 text-lg mb-8">
-          Een biologisch ongemanipuleerd zaadje is goud waard. LastSeeds is de
-          marktplaats voor ongemanipuleerde, heirloom groente- en bloemenzaden.
-          Koop, veil, of ruil met andere hobbyisten.
+          Een biologisch ongemanipuleerd zaadje is goud waard — en dat geldt net
+          zo goed voor een zeldzaam, natuurlijk resistent veeras. LastSeeds is
+          de marktplaats voor heirloom groente- en bloemenzaden, én traditionele
+          veerassen. Koop, veil, of ruil met andere hobbyisten en boeren.
         </p>
 
         {loaded && !user && (
@@ -57,7 +58,7 @@ export default function Home() {
       </section>
 
       <section className="px-6 py-16 border-t border-[#2a3a55]">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
           <Link
             href="/marketplace"
             className="bg-[#101828] border border-[#2a3a55] hover:border-[#4a9eff] rounded-2xl p-6 text-center transition block"
@@ -77,8 +78,8 @@ export default function Home() {
             <div className="text-3xl mb-3">⚖️</div>
             <h3 className="font-bold text-lg mb-2">Veilen</h3>
             <p className="text-gray-400 text-sm">
-              Zeldzame variëteiten? Zet ze op veiling en laat andere
-              overlevenden bieden.
+              Zeldzame variëteiten? Zet ze op veiling en laat andere hobbyisten
+              bieden.
             </p>
           </Link>
 
@@ -91,6 +92,18 @@ export default function Home() {
             <p className="text-gray-400 text-sm">
               Geen geld nodig — ruil je overschot direct met anderen in de
               gemeenschap.
+            </p>
+          </Link>
+
+          <Link
+            href="/marketplace?category=heritage-vee"
+            className="bg-[#101828] border border-[#2a3a55] hover:border-[#4a9eff] rounded-2xl p-6 text-center transition block"
+          >
+            <div className="text-3xl mb-3">🐔</div>
+            <h3 className="font-bold text-lg mb-2">Heritage Vee</h3>
+            <p className="text-gray-400 text-sm">
+              Traditionele veerassen, natuurlijk resistent. Ophalen bij de boer,
+              geen verzending.
             </p>
           </Link>
         </div>

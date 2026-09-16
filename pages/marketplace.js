@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import PhotoLightbox from "@/components/PhotoLightbox";
 import CategorySidebar from "@/components/CategorySidebar";
 import LegalDisclaimer from "@/components/LegalDisclaimer";
+import LivestockDisclaimer from "@/components/LivestockDisclaimer";
 import FavoriteButton from "@/components/FavoriteButton";
 import LocationCircleMap from "@/components/LocationCircleMap";
 import { countries } from "@/lib/countries";
@@ -17,9 +18,16 @@ export async function getServerSideProps({ query }) {
   const page = parseInt(query.page) || 1;
   const skip = (page - 1) * PAGE_SIZE;
 
+  const where = { status: "active" };
+  if (query.category === "heritage-vee") {
+    where.species = { category: { name: "Heritage Vee" } };
+  } else {
+    where.species = { category: { name: { not: "Heritage Vee" } } };
+  }
+
   const [listings, totalCount, categories] = await Promise.all([
     prisma.seedListing.findMany({
-      where: { status: "active" },
+      where,
       include: {
         species: { include: { category: true } },
         owner: {
@@ -38,7 +46,7 @@ export async function getServerSideProps({ query }) {
       skip,
       take: PAGE_SIZE,
     }),
-    prisma.seedListing.count({ where: { status: "active" } }),
+    prisma.seedListing.count({ where }),
     prisma.seedCategory.findMany({
       include: { species: { orderBy: { name: "asc" } } },
       orderBy: { name: "asc" },
@@ -62,7 +70,7 @@ export default function Marketplace({
   totalPages,
 }) {
   const router = useRouter();
-  const { type, species } = router.query;
+  const { type, species, category } = router.query;
   const [listings] = useState(initialListings);
   const [categories] = useState(initialCategories);
   const [searchTerm, setSearchTerm] = useState("");
@@ -107,7 +115,13 @@ export default function Marketplace({
 
   const typeLabel = { sale: "Verkoop", auction: "Veiling", trade: "Ruil" };
   const pageTitle =
-    type === "auction" ? "Veilingen" : type === "trade" ? "Ruilen" : "Aanbod";
+    category === "heritage-vee"
+      ? "Heritage Vee"
+      : type === "auction"
+      ? "Veilingen"
+      : type === "trade"
+      ? "Ruilen"
+      : "Aanbod";
   const pageSubtitle =
     type === "auction"
       ? "Zeldzame zaden waarop geboden kan worden."
@@ -134,7 +148,13 @@ export default function Marketplace({
       <Header />
 
       <div className="px-6 py-10 max-w-7xl mx-auto flex flex-col md:flex-row gap-6">
-        <CategorySidebar categories={categories} />
+        <CategorySidebar
+          categories={
+            category === "heritage-vee"
+              ? categories.filter((c) => c.name === "Heritage Vee")
+              : categories.filter((c) => c.name !== "Heritage Vee")
+          }
+        />
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-2">
@@ -207,12 +227,21 @@ export default function Marketplace({
                       <LegalDisclaimer
                         categoryName={listing.species?.category?.name}
                       />
+                      <LivestockDisclaimer
+                        categoryName={listing.species?.category?.name}
+                      />
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="font-bold text-lg">{listing.title}</h3>
-                        {listing.isHeirloom && (
-                          <span className="text-xs bg-green-900/40 text-green-300 px-2 py-1 rounded-full">
-                            🌱
+                        {listing.species?.category?.name === "Heritage Vee" ? (
+                          <span className="text-xs bg-amber-900/40 text-amber-300 px-2 py-1 rounded-full">
+                            🐔
                           </span>
+                        ) : (
+                          listing.isHeirloom && (
+                            <span className="text-xs bg-green-900/40 text-green-300 px-2 py-1 rounded-full">
+                              🌱
+                            </span>
+                          )
                         )}
                       </div>
                       <p className="text-gray-400 text-sm mb-2">
