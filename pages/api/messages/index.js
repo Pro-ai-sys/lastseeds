@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getUserFromReq } from "@/lib/auth";
+import { sendNewMessageEmail } from "@/lib/mail";
 
 export default async function handler(req, res) {
   const user = getUserFromReq(req);
@@ -60,6 +61,20 @@ export default async function handler(req, res) {
         content: content.trim(),
       },
     });
+
+    try {
+      const [sender, receiver] = await Promise.all([
+        prisma.user.findUnique({ where: { id: user.userId } }),
+        prisma.user.findUnique({ where: { id: receiverId } }),
+      ]);
+      if (receiver?.email) {
+        await sendNewMessageEmail(receiver.email, sender.username);
+      }
+    } catch (mailError) {
+      console.error("Mail versturen mislukt:", mailError);
+    }
+
+    return res.status(201).json({ message });
 
     return res.status(201).json({ message });
   }

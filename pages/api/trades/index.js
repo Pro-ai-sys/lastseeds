@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getUserFromReq } from "@/lib/auth";
+import { sendNewTradeRequestEmail } from "@/lib/mail";
 
 export default async function handler(req, res) {
   const user = getUserFromReq(req);
@@ -39,11 +40,9 @@ export default async function handler(req, res) {
     if (!listing)
       return res.status(404).json({ error: "Listing niet gevonden" });
     if (listing.ownerId === user.userId) {
-      return res
-        .status(400)
-        .json({
-          error: "Je kunt geen ruilverzoek sturen voor je eigen listing",
-        });
+      return res.status(400).json({
+        error: "Je kunt geen ruilverzoek sturen voor je eigen listing",
+      });
     }
 
     const trade = await prisma.tradeRequest.create({
@@ -54,6 +53,24 @@ export default async function handler(req, res) {
         offerDescription,
       },
     });
+
+    try {
+      const [sender, receiver] = await Promise.all([
+        prisma.user.findUnique({ where: { id: user.userId } }),
+        prisma.user.findUnique({ where: { id: listing.ownerId } }),
+      ]);
+      if (receiver?.email) {
+        await sendNewTradeRequestEmail(
+          receiver.email,
+          sender.username,
+          listing.title
+        );
+      }
+    } catch (mailError) {
+      console.error("Mail versturen mislukt:", mailError);
+    }
+
+    return res.status(201).json({ trade });
 
     return res.status(201).json({ trade });
   }

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getUserFromReq } from "@/lib/auth";
+import { geocodePostalCode } from "@/lib/geocode";
 
 export default async function handler(req, res) {
   const user = getUserFromReq(req);
@@ -22,6 +23,7 @@ export default async function handler(req, res) {
         houseNumberAddition: true,
         postalCode: true,
         city: true,
+        country: true,
       },
     });
     return res.status(200).json({ profile });
@@ -40,6 +42,7 @@ export default async function handler(req, res) {
       houseNumberAddition,
       postalCode,
       city,
+      country,
     } = req.body;
 
     if (username) {
@@ -51,6 +54,11 @@ export default async function handler(req, res) {
           .status(409)
           .json({ error: "Gebruikersnaam is al in gebruik" });
       }
+    }
+
+    let coords = null;
+    if (postalCode) {
+      coords = await geocodePostalCode(postalCode, country || city);
     }
 
     const updated = await prisma.user.update({
@@ -67,6 +75,11 @@ export default async function handler(req, res) {
         houseNumberAddition,
         postalCode,
         city,
+        country,
+        ...(coords && {
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        }),
       },
     });
 

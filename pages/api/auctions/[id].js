@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getUserFromReq } from "@/lib/auth";
+import { sendOutbidEmail } from "@/lib/mail";
 
 export default async function handler(req, res) {
   const { id } = req.query;
@@ -69,6 +70,29 @@ export default async function handler(req, res) {
         amount: parseFloat(amount),
       },
     });
+
+    // Stuur een e-mail naar de vorige hoogste bieder (als die er is en niet dezelfde persoon is)
+    try {
+      const previousBid = auction.bids[0];
+      if (
+        previousBid &&
+        previousBid.bidder &&
+        previousBid.bidderId !== user.userId
+      ) {
+        const previousBidder = await prisma.user.findUnique({
+          where: { id: previousBid.bidderId },
+        });
+        if (previousBidder?.email) {
+          await sendOutbidEmail(
+            previousBidder.email,
+            auction.listing.title,
+            id
+          );
+        }
+      }
+    } catch (mailError) {
+      console.error("Mail versturen mislukt:", mailError);
+    }
 
     return res.status(201).json({ bid });
   }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import PhotoLightbox from "@/components/PhotoLightbox";
 import Avatar from "@/components/Avatar";
+import LocationCircleMap from "@/components/LocationCircleMap";
 
 export default function Shop() {
   const router = useRouter();
@@ -72,6 +73,13 @@ export default function Shop() {
             >
               Bekijk reviews en profiel →
             </Link>
+            <div className="mt-4">
+              <LocationCircleMap
+                latitude={seller.latitude}
+                longitude={seller.longitude}
+                city={seller.city}
+              />
+            </div>
           </div>
         </div>
 

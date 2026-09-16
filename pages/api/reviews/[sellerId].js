@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getUserFromReq } from "@/lib/auth";
+import { sendNewReviewEmail } from "@/lib/mail";
 
 export default async function handler(req, res) {
   const { sellerId } = req.query;
@@ -79,6 +80,19 @@ export default async function handler(req, res) {
           photoUrl,
         },
       });
+
+      try {
+        const [reviewer, seller] = await Promise.all([
+          prisma.user.findUnique({ where: { id: user.userId } }),
+          prisma.user.findUnique({ where: { id: sellerId } }),
+        ]);
+        if (seller?.email) {
+          await sendNewReviewEmail(seller.email, reviewer.username, rating);
+        }
+      } catch (mailError) {
+        console.error("Mail versturen mislukt:", mailError);
+      }
+
       return res.status(201).json({ review });
     } catch (error) {
       console.error(error);

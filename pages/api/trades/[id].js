@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getUserFromReq } from "@/lib/auth";
+import { sendTradeStatusEmail } from "@/lib/mail";
 
 export default async function handler(req, res) {
   const user = getUserFromReq(req);
@@ -25,7 +26,20 @@ export default async function handler(req, res) {
     const updated = await prisma.tradeRequest.update({
       where: { id },
       data: { status },
+      include: { listing: true, sender: true },
     });
+
+    try {
+      if (updated.sender?.email) {
+        await sendTradeStatusEmail(
+          updated.sender.email,
+          status,
+          updated.listing.title
+        );
+      }
+    } catch (mailError) {
+      console.error("Mail versturen mislukt:", mailError);
+    }
 
     return res.status(200).json({ trade: updated });
   }

@@ -14,9 +14,12 @@ export default async function handler(req, res) {
       username: true,
       bio: true,
       city: true,
+      country: true,
       avatarType: true,
       avatarUrl: true,
       createdAt: true,
+      latitude: true,
+      longitude: true,
     },
   });
 

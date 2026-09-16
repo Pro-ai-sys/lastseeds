@@ -26,6 +26,9 @@ model User {
   houseNumberAddition String?
   postalCode    String?
   city          String?
+  country       String?
+  latitude      Float?
+  longitude     Float?
   paymentsAsBuyer  Payment[] @relation("BuyerPayments")
   paymentsAsSeller Payment[] @relation("SellerPayments")
 
@@ -107,6 +110,7 @@ model Auction {
   startPrice  Float
   endsAt      DateTime
   status      String    @default("open")
+  winnerNotifiedAt DateTime?
   bids        AuctionBid[]
 }
 
