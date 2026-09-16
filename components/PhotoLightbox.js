@@ -22,7 +22,7 @@ export default function PhotoLightbox({ photos }) {
       {selected && (
         <div
           onClick={() => setSelected(null)}
-          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 cursor-pointer p-4"
+          className="fixed inset-0 bg-black/90 flex items-center justify-center z-[9999] cursor-pointer p-4"
         >
           <img
             src={selected}
