@@ -5,12 +5,17 @@ import Header from "@/components/Header";
 export default function Home() {
   const [user, setUser] = useState(null);
   const [loaded, setLoaded] = useState(false);
+  const [partners, setPartners] = useState([]);
 
   useEffect(() => {
     fetch("/api/auth/me")
       .then((res) => res.json())
       .then((data) => setUser(data.user))
       .finally(() => setLoaded(true));
+
+    fetch("/api/partners")
+      .then((res) => res.json())
+      .then((data) => setPartners(data.partners || []));
   }, []);
 
   return (
@@ -108,6 +113,31 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      {partners.length > 0 && (
+        <section className="px-6 py-12 border-t border-[#2a3a55]">
+          <div className="max-w-5xl mx-auto text-center">
+            <p className="text-gray-500 text-sm mb-6">In samenwerking met</p>
+            <div className="flex flex-wrap justify-center items-center gap-8">
+              {partners.map((partner) => (
+                <a
+                  key={partner.id}
+                  href={partner.websiteUrl || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="opacity-70 hover:opacity-100 transition"
+                >
+                  <img
+                    src={partner.logoUrl}
+                    alt={partner.name}
+                    className="h-10 object-contain grayscale hover:grayscale-0 transition"
+                  />
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <footer className="text-center text-gray-500 text-sm py-8 border-t border-[#2a3a55]">
         <p className="mb-3">

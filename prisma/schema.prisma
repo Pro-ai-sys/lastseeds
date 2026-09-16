@@ -275,3 +275,12 @@ model MotherPlant {
   photoUrl    String?
   createdAt   DateTime  @default(now())
 }
+
+model Partner {
+  id          String    @id @default(cuid())
+  name        String
+  logoUrl     String
+  websiteUrl  String?
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+}
