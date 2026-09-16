@@ -11,6 +11,7 @@ import LocationCircleMap from "@/components/LocationCircleMap";
 import { countries } from "@/lib/countries";
 import { prisma } from "@/lib/prisma";
 import ReportButton from "@/components/ReportButton";
+import ContactSellerButton from "@/components/ContactSellerButton";
 
 const PAGE_SIZE = 24;
 
@@ -128,20 +129,6 @@ export default function Marketplace({
       : type === "trade"
       ? "Zaden die aangeboden worden om te ruilen."
       : "Alle zaden die beschikbaar zijn om te kopen, veilen of ruilen.";
-
-  async function handleBuy(listingId) {
-    const res = await fetch("/api/checkout/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ listingId }),
-    });
-    const data = await res.json();
-    if (data.checkoutUrl) {
-      window.location.href = data.checkoutUrl;
-    } else {
-      alert(data.error || "Er ging iets mis");
-    }
-  }
 
   return (
     <div className="min-h-screen bg-[#060a14] text-white">
@@ -301,12 +288,11 @@ export default function Marketplace({
                         )}
                       </div>
                       {listing.listingType === "sale" && listing.price && (
-                        <button
-                          onClick={() => handleBuy(listing.id)}
-                          className="block w-full mt-3 text-center bg-[#4a9eff] hover:bg-[#3a8eef] py-2 rounded-lg text-sm font-semibold transition"
-                        >
-                          Koop nu
-                        </button>
+                        <ContactSellerButton
+                          sellerId={listing.ownerId}
+                          listingTitle={listing.title}
+                          buttonText="Interesse? Neem contact op"
+                        />
                       )}
                       {listing.listingType === "auction" && listing.auction && (
                         <Link

@@ -233,7 +233,7 @@ export default function Header({ showNav = true }) {
           fontSize="16"
           fill="#8896ab"
         >
-          Ongemanipuleerde biologische oerzaden
+          Ongemanipuleerd erfgoed voor de toekomst
         </text>
 
         <g stroke="#2a3a55" strokeWidth="1">
